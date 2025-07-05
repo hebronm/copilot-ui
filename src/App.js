@@ -23,7 +23,7 @@ function App() {
 
   return (
     <div style={{ padding: '2rem' }}>
-      <h2>Employee Table</h2>
+      <h2>Employees</h2>
       {loading ? (
         <p>Loading...</p>
       ) : (
