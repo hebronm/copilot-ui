@@ -2,6 +2,11 @@
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+## Copilot UI
+- To access the deployed UI, go to [http://34.217.130.235](http://34.217.130.235)
+- The configuration that was modified to direct our server to load our application via the server IP on port 80 was done in `/etc/nginx/nginx.conf`.  Everytime that file is changed, you will need to reload it by running `sudo systemctl reload nginx`.  You can also run `sudo nginx -t` to check for syntax errors.
+- To see error logs from the application, run `sudo tail -f /var/log/nginx/error.log`.
+
 ## Available Scripts
 
 In the project directory, you can run:
