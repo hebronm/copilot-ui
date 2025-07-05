@@ -30,7 +30,7 @@ jobs:
         username: ${{ secrets.LIGHTSAIL_USER }}
         key: ${{ secrets.LIGHTSAIL_SSH_KEY }}
         source: "build"
-        target: "/home/ec2-user/copilot-ui/build"
+        target: "/home/ec2-user/copilot-ui"
 
     - name: Restart NGINX on server
       uses: appleboy/ssh-action@v1.0.3
