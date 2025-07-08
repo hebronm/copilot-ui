@@ -1,5 +1,9 @@
 import React, { useEffect, useState } from 'react';
 
+function MyButton() {
+  return <button>I'm a button, in a return statement</button>;
+}
+
 function App() {
   const [employees, setEmployees] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -23,6 +27,7 @@ function App() {
 
   return (
     <div style={{ padding: '2rem' }}>
+      <MyButton />
       <h2>Employees</h2>
       {loading ? (
         <p>Loading...</p>
