@@ -37,9 +37,102 @@
   }
 }
 
+fieldset {
+  border: 5px solid #4caf50; /* sets border width and color */
+  border-radius: 10px;        /* optional: rounded corners */
+  padding: 1em 1.5em 1.5em;  /* adjust padding for legend */
+}
+
+legend {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #2c3e50;
+  padding: 0 15px;
+  text-align: left;
+}
+
 label {
   margin-top: 20px;
   font-weight: normal;
-  font-size: 16px;
+  font-size: 20px;
   display: block;
+  text-align: left;
+}
+
+.label {
+  margin-top: 20px;
+  font-weight: normal;
+  font-size: 20px;
+  display: block;
+  text-align: center;
+}
+
+/* FULLY CUSTOM SLIDER STYLING */
+
+input[type=range].custom-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 30px;
+  background: transparent;
+  cursor: pointer;
+  margin: 16px 0;
+}
+
+/* Track - Chrome, Safari */
+input[type=range].custom-slider::-webkit-slider-runnable-track {
+  height: 10px;
+  background: transparent;
+  {/*background: linear-gradient(to right, #4caf50 0%, #ccc 0%);*/}
+  border-radius: 20px;
+  /* transition: background 0.3s ease; */
+}
+
+/* Thumb - Chrome, Safari */
+input[type=range].custom-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 30px;
+  height: 30px;
+  background: #ffffff; /* White background for the thumb */
+  border: 3px solid #4caf50; /* Green border for the thumb */
+  border-radius: 50%; /* Makes the thumb perfectly round */
+  box-shadow: 0 0 4px rgba(0,0,0,0.3);
+  margin-top: -10px; /* Vertically centers the 30px thumb on the 10px track */
+  transition: background 0.2s, transform 0.2s;
+}
+
+input[type=range].custom-slider:hover::-webkit-slider-thumb {
+  background: #e8f5e9;
+  transform: scale(1.1);
+}
+
+/* Track - Firefox, don't need to fix yet*/
+input[type=range].custom-slider::-moz-range-track {
+  height: 10px;
+  background: #ccc;
+  border-radius: 5px;
+}
+
+input[type=range].custom-slider::-moz-range-progress {
+  height: 10px;
+  background: #4caf50;
+  border-radius: 5px;
+}
+
+/* Thumb - Firefox, don't need to fix yet*/
+input[type=range].custom-slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  background: #ffffff;
+  border: 3px solid #4caf50;
+  border-radius: 50%;
+  box-shadow: 0 0 4px rgba(0,0,0,0.3);
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+}
+
+input[type=range].custom-slider:hover::-moz-range-thumb {
+  background: #e8f5e9;
+  transform: scale(1.1);
 }

@@ -1,135 +1,173 @@
 import React, { useEffect, useState } from 'react';
 import "./App.css";
+import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
+import Table from "./Table";
+
+
+{/*helper method to create a slider*/}
+function getSliderTrackStyle(value, min = 0, max = 100) {
+  const percent = ((value - min) / (max - min)) * 100;
+  return {
+    background: `linear-gradient(to right, #4caf50 ${percent}%, #ccc ${percent}%)`
+  };
+}
 
 function MyButton() {
   return <button>I'm a button, in a return statement</button>;
 }
 
 function FinancialForm() {
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
   {/*ranges for sliders*/}
   const [ageRange, setAgeRange] = useState([18, 75]);
   const [startingBalance, setStartingBalance] = useState(0);
-  const [monthlyContribution, setMonthlyContribution] = useState(583);
+  const [monthlyContribution, setMonthlyContribution] = useState(100);
   const [annualReturn, setAnnualReturn] = useState(10);
-  const [currentTaxRate, setCurrentTaxRate] = useState(0);
-  const [retirementTaxRate, setRetirementTaxRate] = useState(41);
+  const [currentTaxRate, setCurrentTaxRate] = useState(5);
+  const [retirementTaxRate, setRetirementTaxRate] = useState(10);
+
+   const resetForm = () => {
+    setName('');
+    setEmail('');
+    setAgeRange([18, 75]);
+    setStartingBalance(0);
+    setMonthlyContribution(100);
+    setAnnualReturn(10);
+    setCurrentTaxRate(5);
+    setRetirementTaxRate(10);
+  };
 
   return (
     <form action="/submit" method="post">
       <h3>Financial Input Form</h3>
+
       <fieldset>
         <legend>Basic Info</legend>
-
-        <label className = "label" htmlFor="name">Name: </label>
-        <input type="text" id="name" name="name" placeholder="First Last" /><br /><br />
-
+        <label htmlFor="name">Name: </label>
+        <input
+          type="text"
+          id="name"
+          name="name"
+          placeholder="First Last"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+        /><br /><br />
         <label htmlFor="email">Email: </label>
-        <input type="email" id="email" name="email" /><br /><br />
+        <input
+          type="email"
+          id="email"
+          name="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        /><br /><br />
       </fieldset>
-
 
 
       <fieldset>
         <legend>Your numbers</legend>
 
-        <label htmlFor="range">Volume:</label>
-        <input type="range" id="range" name="volume" min="0" max="100" /><br /><br />
+        <label className="label">
+          Current Age: <b>{ageRange[0]}</b>
+        </label>
+        <input
+          type="range"
+          min="18"
+          max="85"
+          value={ageRange[0]}
+          onChange={(e) =>
+            setAgeRange([Math.min(Number(e.target.value), ageRange[1]), ageRange[1]])
+          }
+          className="custom-slider"
+          style={getSliderTrackStyle(ageRange[0], 18, 85)}
+        />
+
+        <label className="label" style={{ marginTop: '20px' }}>
+          Target Retirement Age: <b>{ageRange[1]}</b>
+        </label>
+        <input
+          type="range"
+          min="18"
+          max="85"
+          value={ageRange[1]}
+          onChange={(e) =>
+            setAgeRange([ageRange[0], Math.max(Number(e.target.value), ageRange[0])])
+          }
+          className="custom-slider"
+          style={getSliderTrackStyle(ageRange[1], 18, 85)}
+/>
+        <div className="subLabel">Adjust your current age and target retirement age</div>
 
         <label className="label">
-            Age Range: <b>{ageRange[0]} to {ageRange[1]}</b>
-          </label>
-          <input
-            type="range"
-            min="18"
-            max="85"
-            value={ageRange[0]}
-            onChange={(e) =>
-              setAgeRange([Math.min(Number(e.target.value), ageRange[1]), ageRange[1]])
-            }
-            className="slider"
-          />
-          <input
-            type="range"
-            min="18"
-            max="85"
-            value={ageRange[1]}
-            onChange={(e) =>
-              setAgeRange([ageRange[0], Math.max(Number(e.target.value), ageRange[0])])
-            }
-            className="slider"
-          />
-          <div className="subLabel">Current age and target retirement age</div>
-        
+          Starting balance ($): <b>{startingBalance.toLocaleString()}</b>
+        </label>
+        <input
+          type="range"
+          min="0"
+          max="100000"
+          step="1000"
+          value={startingBalance}
+          onChange={(e) => setStartingBalance(Number(e.target.value))}
+          className="custom-slider"
+          style={getSliderTrackStyle(startingBalance, 0, 100000)}
+        />
+        <div className="subLabel">${startingBalance.toLocaleString()} / $100k</div>
+
         <label className="label">
-            Starting balance ($): <b>{startingBalance.toLocaleString()}</b>
-          </label>
-          <input
-            type="range"
-            min="0"
-            max="100000"
-            step="1000"
-            value={startingBalance}
-            onChange={(e) => setStartingBalance(Number(e.target.value))}
-            className="slider"
-          />
-          <div className="subLabel">${startingBalance.toLocaleString()} / $100k</div>
+          Monthly contribution ($): <b>{monthlyContribution.toLocaleString()}</b>
+        </label>
+        <input
+          type="range"
+          min="0"
+          max="2000"
+          value={monthlyContribution}
+          onChange={(e) => setMonthlyContribution(Number(e.target.value))}
+          className="custom-slider"
+          style={getSliderTrackStyle(monthlyContribution, 0, 2000)}
+        />
 
-          {/* Monthly contribution */}
-          <label className="label">
-            Monthly contribution ($): <b>{monthlyContribution.toLocaleString()}</b>
-          </label>
-          <input
-            type="range"
-            min="0"
-            max="2000"
-            value={monthlyContribution}
-            onChange={(e) => setMonthlyContribution(Number(e.target.value))}
-            className="slider"
-          />
+        <label className="label">
+          Annual rate of return (%): <b>{annualReturn}</b>
+        </label>
+        <input
+          type="range"
+          min="0"
+          max="15"
+          value={annualReturn}
+          onChange={(e) => setAnnualReturn(Number(e.target.value))}
+          className="custom-slider"
+          style={getSliderTrackStyle(annualReturn, 0, 15)}
+        />
 
-          {/* Annual rate of return */}
-          <label className="label">
-            Annual rate of return (%): <b>{annualReturn}</b>
-          </label>
-          <input
-            type="range"
-            min="0"
-            max="15"
-            value={annualReturn}
-            onChange={(e) => setAnnualReturn(Number(e.target.value))}
-            className="slider"
-          />
+        <label className="label">
+          Current tax rate (%): <b>{currentTaxRate}</b>
+        </label>
+        <input
+          type="range"
+          min="0"
+          max="50"
+          value={currentTaxRate}
+          onChange={(e) => setCurrentTaxRate(Number(e.target.value))}
+          className="custom-slider"
+          style={getSliderTrackStyle(currentTaxRate, 0, 50)}
+        />
 
-          {/* Current tax rate */}
-          <label className="label">
-            Current tax rate (%): <b>{currentTaxRate}</b>
-          </label>
-          <input
-            type="range"
-            min="0"
-            max="50"
-            value={currentTaxRate}
-            onChange={(e) => setCurrentTaxRate(Number(e.target.value))}
-            className="slider"
-          />
-
-          {/* Estimated tax rate at retirement */}
-          <label className="label">
-            Estimated tax rate at retirement (%): <b>{retirementTaxRate}</b>
-          </label>
-          <input
-            type="range"
-            min="0"
-            max="50"
-            value={retirementTaxRate}
-            onChange={(e) => setRetirementTaxRate(Number(e.target.value))}
-            className="slider"
-          />
+        <label className="label">
+          Estimated tax rate at retirement (%): <b>{retirementTaxRate}</b>
+        </label>
+        <input
+          type="range"
+          min="0"
+          max="50"
+          value={retirementTaxRate}
+          onChange={(e) => setRetirementTaxRate(Number(e.target.value))}
+          className="custom-slider"
+          style={getSliderTrackStyle(retirementTaxRate, 0, 50)}
+        />
       </fieldset>
 
       <button type="submit">Submit</button>
-      <button type="reset">Reset Form</button>
-
+      <button type="button" onClick={resetForm}>Reset Form</button>
     </form>
 
   );
@@ -265,63 +303,31 @@ function FormButtons() {
 
 
 function App() {
-  const [employees, setEmployees] = useState([]);
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetch('http://34.217.130.235:8080/employees')
-      .then((response) => response.json())
-      .then((json) => {
-        console.log(json);
-
-        // Safely extract employeeList from the response
-        const employeeList = json?._embedded?.employeeList || [];
-        setEmployees(employeeList);
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error('Error fetching data:', error);
-        setLoading(false);
-      });
-  }, []);
 
   return (
-    <div style={{ padding: '2rem' }}>
 
-      <h2>Form</h2>
-      <FinancialForm />
+    <Router>
+      <nav>
+        <Link to="/">Home</Link> | <Link to="/table">Table</Link>
+      </nav>
 
-
-
-
-      <h2>Employees</h2>
-      {loading ? (
-        <p>Loading...</p>
-      ) : (
-        <table border="1" cellPadding="8" cellSpacing="0">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>First Name</th>
-              <th>Last Name</th>
-              <th>Role</th>
-              <th>Name</th>
-            </tr>
-          </thead>
-          <tbody>
-            {employees.map((emp) => (
-              <tr key={emp.id}>
-                <td>{emp.id}</td>
-                <td>{emp.firstName}</td>
-                <td>{emp.lastName}</td>
-                <td>{emp.role}</td>
-                <td>{emp.name}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
-    </div>
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <div>
+              {/* Put your FinancialForm first */}
+              <FinancialForm />
+              
+              {/* Add any other components or JSX here */}
+              <p>This is extra home page content</p>
+            </div>
+          }
+        />
+        <Route path="/table" element={<Table />} />
+      </Routes>
+    </Router>
   );
 }
 
