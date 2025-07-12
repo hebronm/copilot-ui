@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import "./App.css";
 import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
 import Table from "./Table";
+import { LineChart } from '@mui/x-charts/LineChart';
 
 
 {/*helper method to create a slider*/}
@@ -38,7 +39,46 @@ function FinancialForm() {
     setRetirementTaxRate(10);
   };
 
+  //preparing data points for the graph
+  const chartData = useMemo(() => {
+    const yearsToRetire = ageRange[1] - ageRange[0];
+    const monthsPerYear = 12;
+    const effectiveAnnualReturn = annualReturn * (1 - currentTaxRate / 100);
+    const monthlyReturn = effectiveAnnualReturn / 100 / monthsPerYear;
+
+    let balance = startingBalance;
+    const dataPoints = [];
+
+    const currentYear = new Date().getFullYear();
+
+    for (let year = 0; year <= yearsToRetire; year++) {
+      for (let month = 0; month < monthsPerYear; month++) {
+        balance = balance * (1 + monthlyReturn);
+        balance += monthlyContribution;
+      }
+      dataPoints.push({ year: currentYear + year, balance });
+    }
+
+    // Apply retirement tax once at retirement
+    const afterTaxBalance = balance * (1 - retirementTaxRate / 100);
+    dataPoints.push({ year: currentYear+yearsToRetire+1, balance: afterTaxBalance });
+
+    return dataPoints;
+  }, [
+    ageRange,
+    startingBalance,
+    monthlyContribution,
+    annualReturn,
+    currentTaxRate,
+    retirementTaxRate,
+  ]);
+
+  const xAxisData = chartData.map((point) => point.year);
+  const seriesData = chartData.map((point) => Number(point.balance.toFixed(2)));
+
+
   return (
+    <>
     <form action="/submit" method="post">
       <h3>Financial Input Form</h3>
 
@@ -169,9 +209,39 @@ function FinancialForm() {
       <button type="submit">Submit</button>
       <button type="button" onClick={resetForm}>Reset Form</button>
     </form>
-
+  
+    {/*Chart below the form*/}
+    <div style={{ marginTop: "2rem" }}>
+      <LineChart
+        height={300}
+        xAxis={[{
+          data: xAxisData,
+          label: 'Year',
+          valueFormatter: (year) => String(year), // ✅ disables auto-formatting like 2,045
+        }]}
+        series={[{ data: seriesData }]}
+        aria-label="Retirement savings growth chart"
+      />
+    </div>
+    </>
+        
   );
 }
+
+function FinancialGraph(){
+  return (
+  <   LineChart
+        xAxis={[{ data: [1, 2, 3, 5, 8, 10] }]}
+        series={[
+          {
+            data: [2, 5.5, 2, 8.5, 1.5, 5],
+          },
+        ]}
+        height={300}
+      />
+  )
+}
+    
 
 function BasicInfoForm() {
   return (
@@ -319,6 +389,7 @@ function App() {
             <div>
               {/* Put your FinancialForm first */}
               <FinancialForm />
+
               
               {/* Add any other components or JSX here */}
               <p>This is extra home page content</p>
