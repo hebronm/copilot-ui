@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
+/*
+From my understanding, creating a new table, a new endpoint, new columns, mass add/delete rows requires direct access to backend. 
+The front end can't access it unless the backend has been setup first. 
+*/
 
-function MyButton() {
-  return <button>I'm a button, in a return statement</button>;
-}
+import React, { useEffect, useState } from 'react';
 import "./App.css";
 import FinancialRecords from './FinancialRecords';
 
@@ -327,35 +328,40 @@ function App() {
       });
   }, []);
 
-  const deleteAllEmployees = () => {
-    fetch('http://34.217.130.235:8080/employees', {
-      method: 'DELETE',
-    })
-      .then((response) => {
-        if (response.ok) {
-          console.log('✅ All employees deleted successfully');
-          // Clear the frontend list to reflect change
-          setEmployees([]);
-        } else {
-          console.error('❌ Delete failed. Server may not support DELETE /employees.');
-        }
+  const deleteEmployeesIndividually = () => {
+    const confirmed = window.confirm("Are you sure you want to delete all employees one by one?");
+    if (!confirmed) return;
+  
+    employees.forEach((emp) => {
+      fetch(`http://34.217.130.235:8080/employees/${emp.id}`, {
+        method: 'DELETE',
       })
-      .catch((error) => {
-        console.error('❌ Error during delete request:', error);
-      });
+        .then((res) => {
+          if (res.ok) {
+            console.log(`✅ Deleted employee with ID: ${emp.id}`);
+            // Optionally remove it from local state
+            setEmployees((prev) => prev.filter((e) => e.id !== emp.id));
+          } else {
+            console.error(`❌ Failed to delete employee with ID: ${emp.id}`);
+          }
+        })
+        .catch((err) => {
+          console.error(`❌ Error deleting employee with ID: ${emp.id}`, err);
+        });
+    });
   };
+  
 
 
 
 
   return (  
     <div style={{ padding: '2rem' }}>
-      <MyButton />
       <h2>Financial Planning Form</h2>
       <FinancialForm />
 
-      <button onClick={deleteAllEmployees} style={{ marginBottom: '1rem', backgroundColor: 'red', color: 'white' }}>
-        Delete All Employees
+      <button onClick={deleteEmployeesIndividually} style={{ marginBottom: '1rem', backgroundColor: 'darkred', color: 'white' }}>
+        Delete All Employees One by One
       </button>
 
 
