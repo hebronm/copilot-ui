@@ -39,6 +39,24 @@ function FinancialForm() {
     setRetirementTaxRate(10);
   };
 
+  /**FORMULAS FOR EACH GRAPH
+   * General (taxable):
+   * Uses current age, retirement age, starting balance, monthly contribution (MC), annual return (APR), current tax rate(TR)
+   * For years on the graph, just 2025 until 2025 + (retirement age - current age)
+   * Each month is compunded by APR/12, but taxed at the end of the year by current rate, and monthly contribution is added after 
+   * Formula for each month: Month = Previous month * (1 + (APR/12)) * (1 - TR/100) + MC
+   * 
+   * ROTH IRA 
+   * Uses current age, retirement age, starting balance, monthly contribution (MC), annual return (APR)
+   * Each month is compunded by APR/12, but taxed at the end of the year by current rate, and monthly contribution is added after
+   * (Same as general but no tax)
+   * Formula: Month = Previous month * (1 + (APR/12)) + MC
+   * 
+   * In my code, I calculate the total return for the entire year so I don't have to do each month
+   * effectiveTaxedAnnualReturn includes tax multplied by annualReturn
+   * I use the annual return (taxed and not taxed), divide by 100 to turn into a percentage, and divide by 12 for months
+   * That way, I can just do year by year
+   */
   
   const chartData = useMemo(() => {
     const startYear = 2025;
