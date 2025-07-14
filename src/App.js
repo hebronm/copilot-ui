@@ -41,6 +41,7 @@ function FinancialForm() {
 
   
   const chartData = useMemo(() => {
+    const startYear = 2025;
     const yearsToRetire = ageRange[1] - ageRange[0];
     const monthsPerYear = 12;
     const currentYear = new Date().getFullYear();
@@ -57,11 +58,23 @@ function FinancialForm() {
     //four, one for each graph
     const dataPoints = [];
 
+    // Push initial year (2025) — no contributions, no growth
+    dataPoints.push({
+      year: startYear,
+      generalBalance,
+      rothBalance,
+    });
 
-    for (let year = 0; year <= yearsToRetire; year++) {
+
+    for (let year = 1; year <= yearsToRetire; year++) {
       for (let month = 0; month < monthsPerYear; month++) {
+        /**General formula: compounded per month by APR/12
+         * then add monthly contribution
+         * each year taxes tax rate on APR earnings only
+         */
         generalBalance = generalBalance * (1 + monthlyTaxedReturn);
         generalBalance += monthlyContribution;
+        /**Roth IRA formula: same as general but no tax on earnings */
         rothBalance = rothBalance * (1 + monthlyReturn); 
         rothBalance += monthlyContribution;
       }
@@ -239,12 +252,12 @@ function FinancialForm() {
         series={[
           {
             data: generalSeriesData,
-            label: 'Pre-Tax Balance',
+            label: 'General (taxable)',
             color: '#1976d2',
           },
           {
             data: rothSeriesData,
-            label: 'After-Tax Balance',
+            label: 'Roth IRA',
             color: '#2e7d32',
           }
         ]}
