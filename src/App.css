@@ -78,22 +78,21 @@
   padding: 1.5rem;
   border-radius: 8px;
   border: 1px solid #ccc;
+  min-width: 33%;
+  display: flex;
+  flex-direction: column;
+}
+
+.chart-box {
+  background: #fefefe;
+  padding: 1.5rem;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  align-self: center;
 }
 
 fieldset {
   margin-top: 1.5rem;
-  padding: 1rem;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  background: #fafafa;
-}
-
-.thinFieldset {
-  margin-top: 1.5rem;
-  max-width: 800px;
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
   padding: 1rem;
   border: 1px solid #ddd;
   border-radius: 5px;
@@ -157,6 +156,37 @@ small {
   font-size: 14px;
   display: block;
   text-align: center;
+}
+
+.form-chart-wrapper {
+  display: flex;
+  flex-direction: row;
+  align-items: center; 
+  gap: 2rem;
+  flex-wrap: nowrap;
+}
+
+
+/* Responsive stacking on smaller screens */
+@media (max-width: 1200px) {
+  .form-chart-wrapper {
+    flex-direction: column;
+    align-items: stretch;
+    flex-wrap: wrap;
+  }
+
+  .form-chart-wrapper .form-box,
+  .form-chart-wrapper .chart-box {
+    width: 100%;
+    flex: none;
+  }
+
+  .form-box,
+  .chart-box {
+    min-width: auto;
+    min-height: auto;
+    display: block;           /* reset for stacked mode */
+  }
 }
 
 /* FULLY CUSTOM SLIDER STYLING */
