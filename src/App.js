@@ -17,7 +17,7 @@ function getSliderTrackStyle(value, min = 0, max = 100) {
 
 function FinancialForm({ onSubmit }) {
 
-  /**
+  
   const handleSubmit = (e) => {
     e.preventDefault();
     // Data package for future backend use; need to work out backend later
@@ -37,7 +37,7 @@ function FinancialForm({ onSubmit }) {
     console.log("Form Submitted:", formData);
     onSubmit(formData);
   };
-  */
+  
 
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
