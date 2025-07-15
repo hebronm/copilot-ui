@@ -182,7 +182,6 @@ function FinancialForm({ onSubmit }) {
         {/*Financial Info Box*/}
         <fieldset>
           <h2 style={{ textAlign: 'center' }}>Financial Information</h2>
-          <br></br>
 
           <label className="label">
             Current Age: <b>{ageRange[0]}</b>
