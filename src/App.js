@@ -15,10 +15,16 @@ function getSliderTrackStyle(value, min = 0, max = 100) {
   };
 }
 
+/* temporarily changed until submit is implemented
+
+Supposed to be this:
 function FinancialForm({ onSubmit }) {
 
-  
-  const handleSubmit = (e) => {
+changed to this:
+*/
+function FinancialForm() {
+
+  /*const handleSubmit = (e) => {
     e.preventDefault();
     // Data package for future backend use; need to work out backend later
     const formData = {
@@ -36,7 +42,7 @@ function FinancialForm({ onSubmit }) {
     };
     console.log("Form Submitted:", formData);
     onSubmit(formData);
-  };
+  };*/
   
 
   const [firstName, setFirstName] = useState('');
