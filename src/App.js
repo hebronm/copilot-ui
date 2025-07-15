@@ -414,11 +414,9 @@ function App() {
           path="/"
           element={
             <div>
-              {/* Put your FinancialForm first */}
               <FinancialForm />
 
-              
-              {/* Add any other components or JSX here */}
+
               <p>This is extra home page content</p>
             </div>
           }
