@@ -1,13 +1,13 @@
 
-import React, { useEffect, useState, useMemo } from 'react';
+import React, {useState, useMemo } from 'react';
 import "./App.css";
-import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
+import { BrowserRouter as Route, Routes, Link } from "react-router-dom";
 import { useLocation } from 'react-router-dom';
 import Table from "./Table";
 import { LineChart } from '@mui/x-charts/LineChart';
 
 
-{/*helper method to create a slider*/}
+//helper method to create a slider
 function getSliderTrackStyle(value, min = 0, max = 100) {
   const percent = ((value - min) / (max - min)) * 100;
   return {
@@ -44,7 +44,7 @@ function FinancialForm({ onSubmit }) {
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [birthday, setBirthday] = useState('');
-  {/*ranges for sliders*/}
+  //ranges for sliders
   const [ageRange, setAgeRange] = useState([18, 75]);
   const [startingBalance, setStartingBalance] = useState(0);
   const [monthlyContribution, setMonthlyContribution] = useState(100);
@@ -66,7 +66,7 @@ function FinancialForm({ onSubmit }) {
     setRetirementTaxRate(10);
   };
 
-  
+
   /**FORMULAS FOR EACH GRAPH
    * 
    * For years on the graph, just 2025 until 2025 + (retirement age - current age)
@@ -374,7 +374,8 @@ function FinancialForm({ onSubmit }) {
   );
 }
 
-function FinancialGraph(){
+/**
+ * function FinancialGraph(){
   return (
   <   LineChart
         xAxis={[{ data: [1, 2, 3, 5, 8, 10] }]}
@@ -387,7 +388,8 @@ function FinancialGraph(){
       />
   )
 }
-    
+ */
+
 
 
 
