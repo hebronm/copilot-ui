@@ -66,6 +66,7 @@ function FinancialForm({ onSubmit }) {
     setRetirementTaxRate(10);
   };
 
+  
   /**FORMULAS FOR EACH GRAPH
    * 
    * For years on the graph, just 2025 until 2025 + (retirement age - current age)
