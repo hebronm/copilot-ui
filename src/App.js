@@ -239,7 +239,7 @@ function FinancialForm({ onSubmit }) {
             className="custom-slider"
             style={getSliderTrackStyle(monthlyContribution, 0, 2000)}
           />
-          <small>How much you intend to put in each month</small>
+          <small>Note: This is the amount of "After-Tax" money you're willing to put in monthly</small>
 
           <label className="label">
             Annual rate of return (%): <b>{annualReturn}</b>
