@@ -2,6 +2,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import "./App.css";
 import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
+import { useLocation } from 'react-router-dom';
 import Table from "./Table";
 import { LineChart } from '@mui/x-charts/LineChart';
 
@@ -38,8 +39,11 @@ function FinancialForm({ onSubmit }) {
   };
   */
 
-  const [name, setName] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [birthday, setBirthday] = useState('');
   {/*ranges for sliders*/}
   const [ageRange, setAgeRange] = useState([18, 75]);
   const [startingBalance, setStartingBalance] = useState(0);
@@ -48,9 +52,12 @@ function FinancialForm({ onSubmit }) {
   const [currentTaxRate, setCurrentTaxRate] = useState(5);
   const [retirementTaxRate, setRetirementTaxRate] = useState(10);
 
-   const resetForm = () => {
-    setName('');
+  const resetForm = () => {
+    setFirstName('');
+    setLastName('');
     setEmail('');
+    setPhone('');
+    setBirthday('');
     setAgeRange([18, 75]);
     setStartingBalance(0);
     setMonthlyContribution(100);
@@ -76,7 +83,7 @@ function FinancialForm({ onSubmit }) {
    * effectiveTaxedAnnualReturn includes tax multplied by annualReturn
    * I use the annual return (taxed and not taxed), divide by 100 to turn into a percentage, and divide by 12 for months
    * That way, I can just do year by year
-   */
+*/
   
   const chartData = useMemo(() => {
     const startYear = 2025;
@@ -146,163 +153,170 @@ function FinancialForm({ onSubmit }) {
 
 
   return (
-    <>
-    <form action="/submit" method="post">
-      <h3>Financial Input Form</h3>
+    <div style={{ padding: '2rem', maxWidth: '1200px', margin: 'auto' }}>
+      <form className='form-box' action="/submit" method="post">
+        <h1 style={{ textAlign: 'center' }}>IRA Calculator Tool</h1>
+        <br></br>
 
-      <fieldset>
-        <legend>Basic Info</legend>
-        <label htmlFor="name">Name: </label>
-        <input
-          type="text"
-          id="name"
-          name="name"
-          placeholder="First Last"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        /><br /><br />
-        <label htmlFor="email">Email: </label>
-        <input
-          type="email"
-          id="email"
-          name="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        /><br /><br />
-      </fieldset>
+        {/*Basical Info Box*/}
+        <fieldset className='thinFieldset'>
+        <h2 style={{ textAlign: 'center' }}>Basic Information</h2>
+        <div className='center-container'>
+          <label className='Box1Label'>First Name:</label>
+          <input type="text" placeholder="John" value={firstName} onChange={e => setFirstName(e.target.value)} />
 
+          <label className='Box1Label'>Last Name:</label>
+          <input type="text" placeholder="Doe" value={lastName} onChange={e => setLastName(e.target.value)} />
 
-      <fieldset>
-        <legend>Your numbers</legend>
+          <label className='Box1Label'>Email:</label>
+          <input type="email" placeholder="JohnDoe@mail.com" value={email} onChange={e => setEmail(e.target.value)} />
 
-        <label className="label">
-          Current Age: <b>{ageRange[0]}</b>
-        </label>
-        <input
-          type="range"
-          min="18"
-          max="85"
-          value={ageRange[0]}
-          onChange={(e) =>
-            setAgeRange([Math.min(Number(e.target.value), ageRange[1]), ageRange[1]])
-          }
-          className="custom-slider"
-          style={getSliderTrackStyle(ageRange[0], 18, 85)}
-        />
+          <label className='Box1Label'>Phone Number:</label>
+          <input type="tel" placeholder="(123) 456-7890" value={phone} onChange={e => setPhone(e.target.value)} />
 
-        <label className="label" style={{ marginTop: '20px' }}>
-          Target Retirement Age: <b>{ageRange[1]}</b>
-        </label>
-        <input
-          type="range"
-          min="18"
-          max="85"
-          value={ageRange[1]}
-          onChange={(e) =>
-            setAgeRange([ageRange[0], Math.max(Number(e.target.value), ageRange[0])])
-          }
-          className="custom-slider"
-          style={getSliderTrackStyle(ageRange[1], 18, 85)}
-/>
-        <div className="subLabel">Adjust your current age and target retirement age</div>
+          <label className='Box1Label'>Birthday:</label>
+          <input type="date" value={birthday} onChange={e => setBirthday(e.target.value)} />
+        </div>
+        </fieldset>
 
-        <label className="label">
-          Starting balance ($): <b>{startingBalance.toLocaleString()}</b>
-        </label>
-        <input
-          type="range"
-          min="0"
-          max="100000"
-          step="1000"
-          value={startingBalance}
-          onChange={(e) => setStartingBalance(Number(e.target.value))}
-          className="custom-slider"
-          style={getSliderTrackStyle(startingBalance, 0, 100000)}
-        />
-        <div className="subLabel">${startingBalance.toLocaleString()} / $100k</div>
+        {/*Financial Info Box*/}
+        <fieldset>
+          <h2 style={{ textAlign: 'center' }}>Financial Information</h2>
+          <br></br>
 
-        <label className="label">
-          Monthly contribution ($): <b>{monthlyContribution.toLocaleString()}</b>
-        </label>
-        <input
-          type="range"
-          min="0"
-          max="2000"
-          value={monthlyContribution}
-          onChange={(e) => setMonthlyContribution(Number(e.target.value))}
-          className="custom-slider"
-          style={getSliderTrackStyle(monthlyContribution, 0, 2000)}
-        />
+          <label className="label">
+            Current Age: <b>{ageRange[0]}</b>
+          </label>
+          <input
+            type="range"
+            min="18"
+            max="85"
+            value={ageRange[0]}
+            onChange={(e) => setAgeRange([Math.min(Number(e.target.value), ageRange[1]), ageRange[1]])}
+            className="custom-slider"
+            style={getSliderTrackStyle(ageRange[0], 18, 85)}
+          />
 
-        <label className="label">
-          Annual rate of return (%): <b>{annualReturn}</b>
-        </label>
-        <input
-          type="range"
-          min="0"
-          max="15"
-          value={annualReturn}
-          onChange={(e) => setAnnualReturn(Number(e.target.value))}
-          className="custom-slider"
-          style={getSliderTrackStyle(annualReturn, 0, 15)}
-        />
+          <label className="label" style={{ marginTop: '20px' }}>
+            Target Retirement Age: <b>{ageRange[1]}</b>
+          </label>
+          <input
+            type="range"
+            min="18"
+            max="85"
+            value={ageRange[1]}
+            onChange={(e) =>
+              setAgeRange([ageRange[0], Math.max(Number(e.target.value), ageRange[0])])
+            }
+            className="custom-slider"
+            style={getSliderTrackStyle(ageRange[1], 18, 85)}
+          />
+          <small>Adjust to your current age and target retirement age</small>
 
-        <label className="label">
-          Current tax rate (%): <b>{currentTaxRate}</b>
-        </label>
-        <input
-          type="range"
-          min="0"
-          max="50"
-          value={currentTaxRate}
-          onChange={(e) => setCurrentTaxRate(Number(e.target.value))}
-          className="custom-slider"
-          style={getSliderTrackStyle(currentTaxRate, 0, 50)}
-        />
+          <label className="label">
+            Starting balance ($): <b>{startingBalance.toLocaleString()}</b>
+          </label>
+          <input
+            type="range"
+            min="0"
+            max="100000"
+            step="1000"
+            value={startingBalance}
+            onChange={(e) => setStartingBalance(Number(e.target.value))}
+            className="custom-slider"
+            style={getSliderTrackStyle(startingBalance, 0, 100000)}
+          />
+          <small>${startingBalance.toLocaleString()} / $100k</small>
 
-        <label className="label">
-          Estimated tax rate at retirement (%): <b>{retirementTaxRate}</b>
-        </label>
-        <input
-          type="range"
-          min="0"
-          max="50"
-          value={retirementTaxRate}
-          onChange={(e) => setRetirementTaxRate(Number(e.target.value))}
-          className="custom-slider"
-          style={getSliderTrackStyle(retirementTaxRate, 0, 50)}
-        />
-      </fieldset>
+          <label className="label">
+            Monthly contribution ($): <b>{monthlyContribution.toLocaleString()}</b>
+          </label>
+          <input
+            type="range"
+            min="0"
+            max="2000"
+            value={monthlyContribution}
+            onChange={(e) => setMonthlyContribution(Number(e.target.value))}
+            className="custom-slider"
+            style={getSliderTrackStyle(monthlyContribution, 0, 2000)}
+          />
+          <small>How much you intend to put in each month</small>
 
-      <button type="submit">Submit</button>
-      <button type="button" onClick={resetForm}>Reset Form</button>
-    </form>
-  
-    {/*Chart below the form*/}
-    <div style={{ marginTop: "2rem" }}>
-      <LineChart
-        height={300}
-        xAxis={[{
-          data: xAxisData,
-          label: 'Year',
-          valueFormatter: (year) => String(year), // ✅ disables auto-formatting like 2,045
-        }]}
-        series={[
-          {
-            data: generalSeriesData,
-            label: 'General (taxable)',
-            color: '#1976d2',
-          },
-          {
-            data: rothSeriesData,
-            label: 'Roth IRA',
-            color: '#2e7d32',
-          }
-        ]}
-        aria-label="Retirement savings growth chart"
-      />
+          <label className="label">
+            Annual rate of return (%): <b>{annualReturn}</b>
+          </label>
+          <input
+            type="range"
+            min="0"
+            max="15"
+            value={annualReturn}
+            onChange={(e) => setAnnualReturn(Number(e.target.value))}
+            className="custom-slider"
+            style={getSliderTrackStyle(annualReturn, 0, 15)}
+          />
+          <small>Historically, a rough estimate for 30 years would show a 10-12% return</small>
+
+          <label className="label">
+            Current tax rate (%): <b>{currentTaxRate}</b>
+          </label>
+          <input
+            type="range"
+            min="0"
+            max="50"
+            value={currentTaxRate}
+            onChange={(e) => setCurrentTaxRate(Number(e.target.value))}
+            className="custom-slider"
+            style={getSliderTrackStyle(currentTaxRate, 0, 50)}
+          />
+
+          <label className="label">
+            Estimated tax rate at retirement (%): <b>{retirementTaxRate}</b>
+          </label>
+          <input
+            type="range"
+            min="0"
+            max="50"
+            value={retirementTaxRate}
+            onChange={(e) => setRetirementTaxRate(Number(e.target.value))}
+            className="custom-slider"
+            style={getSliderTrackStyle(retirementTaxRate, 0, 50)}
+          />
+        </fieldset>
+
+        <div style={{ marginTop: '1rem', textAlign: 'center' }}>
+          <button type="submit" className='submit-btn'>Submit</button>
+          <button type="reset" className='reset-btn' onClick={resetForm}>Reset Form</button>
+        </div>
+      </form>
+    
+      {/* Chart Graph Section */}
+      <div className="form-box" style={{ marginTop: '2rem' }}>
+        <h3 style={{ textAlign: 'center' }}>Estimated Account Value Graph</h3>
+        <fieldset>
+          <LineChart
+            height={300}
+            xAxis={[{
+              data: xAxisData,
+              label: 'Year',
+              valueFormatter: (year) => String(year), // ✅ disables auto-formatting like 2,045
+            }]}
+            series={[
+              {
+                data: generalSeriesData,
+                label: 'General (taxable)',
+                color: '#1976d2',
+              },
+              {
+                data: rothSeriesData,
+                label: 'Roth IRA',
+                color: '#2e7d32',
+              }
+            ]}
+            aria-label="Retirement savings growth chart"
+          />
+        </fieldset>
+      </div>
     </div>
-    </>
         
   );
 }
@@ -325,15 +339,13 @@ function FinancialGraph(){
 
 
 function App() {
-
-
-  
+  const location = useLocation();
 
   return (
-
-    <Router>
-      <nav>
-        <Link to="/">Home</Link> | <Link to="/table">Table</Link>
+    <>
+      <nav className='nav-tabs'>
+        <Link to="/" className={`tab-link ${location.pathname === '/' ? 'active' : ''}`}>Home</Link>
+        <Link to="/table" className={`tab-link ${location.pathname === '/table' ? 'active' : ''}`}>Table</Link>
       </nav>
 
       <Routes>
@@ -352,7 +364,7 @@ function App() {
         />
         <Route path="/table" element={<Table />} />
       </Routes>
-    </Router>
+    </>
 
   );
 }

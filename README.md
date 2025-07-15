@@ -73,3 +73,36 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 ### `npm run build` fails to minify
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+
+
+## Developer - Local Installation Steps
+
+1. Ensure that you have "npm" installed on your system. Check the version by running the following command:
+```
+npm --version
+```
+2. If "npm" is not installed, you can install it by running the following command:
+
+```
+sudo apt install npm
+```
+
+3. Clone this repository
+
+4. Navigate to the project directory
+
+5. Run the following command to install the router library:
+```
+npm install react-router-dom
+```
+
+6. Run the following command to install the MUI library:
+```
+npm install @mui/material @emotion/react @emotion/styled @mui/icons-material @mui/x-charts
+```
+ 7. To start the application, run the following command:
+```
+npm start
+```
+
+The webapp should automatically open in your default browser at "localhost:3000".

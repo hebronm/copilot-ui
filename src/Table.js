@@ -49,7 +49,7 @@ function App() {
 
     return (
       
-      <div style={{ marginTop: '2rem' }}>
+      <div style={{ padding:"2rem", marginTop: '2rem' }}>
         {/* Employees Table (Debugging) */}
         <h3>Employees Table</h3>
         <div style={{ marginBottom: '1rem' }}>
