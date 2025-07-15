@@ -67,9 +67,12 @@ function FinancialForm({ onSubmit }) {
   };
 
   /**FORMULAS FOR EACH GRAPH
+   * 
+   * For years on the graph, just 2025 until 2025 + (retirement age - current age)
+   * Monthly contribution is assumed to be after tax
+   * 
    * General (taxable):
    * Uses current age, retirement age, starting balance, monthly contribution (MC), annual return (APR), current tax rate(TR)
-   * For years on the graph, just 2025 until 2025 + (retirement age - current age)
    * Each month is compunded by APR/12, but taxed at the end of the year by current rate, and monthly contribution is added after 
    * Formula for each month: Month = Previous month * (1 + (APR/12)) * (1 - TR/100) + MC
    * 
@@ -83,8 +86,13 @@ function FinancialForm({ onSubmit }) {
    * effectiveTaxedAnnualReturn includes tax multplied by annualReturn
    * I use the annual return (taxed and not taxed), divide by 100 to turn into a percentage, and divide by 12 for months
    * That way, I can just do year by year
-*/
-  
+   * 
+   * Deductible IRA:
+   * Uses urrent age, retirement age, starting balance, monthly contribution (MC), annual return (APR), current tax rate(TR), and retirement tax rate(RT)
+   * Adjusts monthly contribution to before tax (MCeff), and uses same formula as ROTH IRA with MCeff instead of MC, 
+   * then is desplayed by balance * (1 - RT/100) to adjust for retirement tax
+   */
+   
   const chartData = useMemo(() => {
     const startYear = 2025;
     const yearsToRetire = ageRange[1] - ageRange[0];
@@ -95,10 +103,16 @@ function FinancialForm({ onSubmit }) {
     const monthlyReturn = annualReturn / 100 / monthsPerYear
     const monthlyTaxedReturn = effectiveTaxedAnnualReturn / 100 / monthsPerYear;
 
+    // Deductible IRA monthly contribution adjusted for pretax (contributions are pretax)
+    const preTaxMonthlyContribution = monthlyContribution / (1 - currentTaxRate / 100);
+
+
     let generalBalance = startingBalance;
     let rothBalance = startingBalance;
-    let deductableBalance = startingBalance;
-    let nonDeductableBalance = startingBalance;
+    let deductibleBalance = startingBalance;
+    let nonDeductibleBalance = startingBalance;
+
+    let nonDeductibleTotalContributions = 0;
     
     //four, one for each graph
     const dataPoints = [];
@@ -108,6 +122,8 @@ function FinancialForm({ onSubmit }) {
       year: startYear,
       generalBalance,
       rothBalance,
+      deductibleBalance,
+      nonDeductibleBalance,
     });
 
 
@@ -122,13 +138,36 @@ function FinancialForm({ onSubmit }) {
         /**Roth IRA formula: same as general but no tax on earnings */
         rothBalance = rothBalance * (1 + monthlyReturn); 
         rothBalance += monthlyContribution;
+
+        /** same as general but uses pretax mc */
+        deductibleBalance = deductibleBalance * (1 + monthlyReturn);
+        deductibleBalance += preTaxMonthlyContribution;
+
+        // Non-deductible IRA: same retirement tax drag on growth, add after-tax contribution
+        nonDeductibleBalance = nonDeductibleBalance * (1 + monthlyReturn);
+        nonDeductibleBalance += monthlyContribution;
+        nonDeductibleTotalContributions += monthlyContribution;
+
       }
+
+      // Apply retirement tax once per year snapshot for deductible and non-deductible IRAs
+      
+      // apply retirement tax to entire balance
+      const deductibleAfterTax = deductibleBalance * (1 - retirementTaxRate / 100);
+      // apply reitrement tax only to earnings, so subtract the contribution times number of months
+      const nonDeductibleAfterTax = nonDeductibleBalance - 
+      (nonDeductibleBalance - nonDeductibleTotalContributions) * (retirementTaxRate / 100);
+
       dataPoints.push({
         year: currentYear + year,
         generalBalance,
         rothBalance,
+        deductibleBalance: deductibleAfterTax,
+        nonDeductibleBalance: nonDeductibleAfterTax,
       });
     }
+
+
 
     /*
     Right now this only does once year
@@ -150,7 +189,8 @@ function FinancialForm({ onSubmit }) {
   const xAxisData = chartData.map((point) => point.year);
   const generalSeriesData = chartData.map((point) => Number(point.generalBalance.toFixed(2)) || 0);
   const rothSeriesData = chartData.map((point) => Number(point.rothBalance.toFixed(2) || 0));
-
+  const deductibleSeriesData = chartData.map((point) => Number(point.deductibleBalance.toFixed(2) || 0));
+  const nonDeductibleSeriesData = chartData.map((point) => Number(point.nonDeductibleBalance.toFixed(2) || 0));
 
   return (
     <div style={{ padding: '2rem', maxWidth: '1200px', margin: 'auto' }}>
@@ -239,7 +279,8 @@ function FinancialForm({ onSubmit }) {
             className="custom-slider"
             style={getSliderTrackStyle(monthlyContribution, 0, 2000)}
           />
-          <small>How much you intend to put in each month</small>
+          <small>Note: This is the amount of "After-Tax" money you're willing to put in monthly</small>
+
 
           <label className="label">
             Annual rate of return (%): <b>{annualReturn}</b>
@@ -288,12 +329,13 @@ function FinancialForm({ onSubmit }) {
         </div>
       </form>
     
-      {/* Chart Graph Section */}
-      <div className="form-box" style={{ marginTop: '2rem' }}>
-        <h3 style={{ textAlign: 'center' }}>Estimated Account Value Graph</h3>
-        <fieldset>
+
+      {/*Chart below the form*/}
+      <div className = "form-box" style = {{marginTop: '2rem'}}>
+        <h3 style={{ textAlign: 'center'}}>Estimated Account Value Graph</h3>
+          <fieldset>
           <LineChart
-            height={300}
+            height={1000}
             xAxis={[{
               data: xAxisData,
               label: 'Year',
@@ -309,13 +351,24 @@ function FinancialForm({ onSubmit }) {
                 data: rothSeriesData,
                 label: 'Roth IRA',
                 color: '#2e7d32',
+              }, 
+              {
+                data: deductibleSeriesData,
+                label: 'Deductible Traditional IRA',
+                color: '#FF5733',
+              }, 
+              {
+                data: nonDeductibleSeriesData,
+                label: 'Non-Deductible Traditional IRA',
+                color: '#8F1A96',
               }
             ]}
             aria-label="Retirement savings growth chart"
           />
-        </fieldset>
+          </fieldset>
+        </div>
+
       </div>
-    </div>
         
   );
 }
