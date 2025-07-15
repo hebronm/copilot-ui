@@ -1,8 +1,7 @@
 
 import React, {useState, useMemo } from 'react';
 import "./App.css";
-import { BrowserRouter as Route, Routes, Link } from "react-router-dom";
-import { useLocation } from 'react-router-dom';
+import { Route, Routes, Link, useLocation } from "react-router-dom";
 import Table from "./Table";
 import { LineChart } from '@mui/x-charts/LineChart';
 
@@ -416,7 +415,7 @@ function App() {
             <div>
               <FinancialForm />
 
-
+              
               <p>This is extra home page content</p>
             </div>
           }
