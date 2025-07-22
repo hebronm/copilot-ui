@@ -77,7 +77,7 @@ function DataAnalysis() {
     return years
   })
 
-  // Calculate optimal switching strategy with realistic Both Accounts approach
+  // Calculate optimal switching strategy with CORRECTED FORMULAS
   const analysis = useMemo(() => {
     const yearsToRetirement = retirementAge - currentAge
     const monthlyReturn = expectedReturn / 100 / 12
@@ -99,20 +99,12 @@ function DataAnalysis() {
 
     // Track multiple scenarios
     const scenarios = {
-      // Scenario 1: Always Traditional
       alwaysTraditional: { balance: startingBalance },
-      // Scenario 2: Always Roth
       alwaysRoth: { balance: startingBalance },
-      // Scenario 3: Optimal switching strategy
       switching: {
         traditionalBalance: startingBalance,
         rothBalance: 0,
         currentStrategy: null,
-      },
-      // Scenario 4: Realistic Both Accounts strategy (like CSV)
-      bothAccounts: {
-        traditionalBalance: startingBalance,
-        rothBalance: 0,
       },
     }
 
@@ -126,110 +118,94 @@ function DataAnalysis() {
       const taxRateThisYear = getTaxRate(salary)
       const monthlyContribution = contribution
 
-      // Determine optimal strategy for switching approach
-      const optimalStrategy = taxRateThisYear > retirementTaxRate ? "Traditional" : "Roth"
+      // CORRECTED: More realistic switching thresholds
+      const taxDifference = taxRateThisYear - retirementTaxRate
+      let optimalStrategy
 
-      // Realistic Both Accounts split (like CSV data)
-      let traditionalAmount = 0
-      let rothAmount = 0
-
-      // IRA contribution limits (2024: $7,000, or $8,000 if 50+)
-      const iraLimit = currentAgeInYear >= 50 ? 8000 : 7000
-      const annualContribution = Math.min(monthlyContribution * 12, iraLimit)
-
-      if (salary < 50000) {
-        // Low income: Favor Roth (pay taxes when rate is low)
-        rothAmount = Math.min(annualContribution, 6000)
-        traditionalAmount = annualContribution - rothAmount
-      } else if (salary < 100000) {
-        // Medium income: Split based on tax advantage
-        if (taxRateThisYear > retirementTaxRate + 3) {
-          // Traditional advantage
-          traditionalAmount = annualContribution * 0.7
-          rothAmount = annualContribution * 0.3
-        } else {
-          // Roth advantage or neutral
-          rothAmount = annualContribution * 0.6
-          traditionalAmount = annualContribution * 0.4
-        }
+      if (taxDifference >= 4) {
+        // Current tax rate is 4+ points higher - Traditional wins
+        optimalStrategy = "Traditional"
+      } else if (taxDifference <= -3) {
+        // Retirement tax rate is 3+ points higher - Roth wins
+        optimalStrategy = "Roth"
+      } else if (currentAgeInYear < 35 && salary < 70000) {
+        // Young with moderate income - favor Roth for long growth
+        optimalStrategy = "Roth"
+      } else if (salary > 100000 && taxDifference >= 2) {
+        // High income with some tax savings - favor Traditional
+        optimalStrategy = "Traditional"
       } else {
-        // High income: Favor Traditional (big tax savings now)
-        traditionalAmount = Math.min(annualContribution, 6000)
-        rothAmount = annualContribution - traditionalAmount
-      }
+        // Default: stick with current strategy (no switching for small differences)
+        optimalStrategy = scenarios.switching.currentStrategy || "Traditional"
+      } 
+
+      let traditionalAmount = 0
+      let rothAmount = 0      
+
 
       // Apply growth and contributions for this year
       if (year > 0) {
-        // Always Traditional scenario
+        const afterTaxContribution = monthlyContribution
+
+
+        // Scenario 1: Always Traditional
         for (let month = 0; month < 12; month++) {
-          const preTaxContribution = monthlyContribution / (1 - taxRateThisYear / 100)
-          scenarios.alwaysTraditional.balance =
-            scenarios.alwaysTraditional.balance * (1 + monthlyReturn) + preTaxContribution
+          scenarios.alwaysTraditional.balance = scenarios.alwaysTraditional.balance * (1 + monthlyReturn)
+          const preTaxContribution = afterTaxContribution / (1 - taxRateThisYear / 100)
+          scenarios.alwaysTraditional.balance += preTaxContribution
         }
 
-        // Always Roth scenario
+        // Scenario 2: Always Roth
         for (let month = 0; month < 12; month++) {
-          scenarios.alwaysRoth.balance = scenarios.alwaysRoth.balance * (1 + monthlyReturn) + monthlyContribution
+          scenarios.alwaysRoth.balance = scenarios.alwaysRoth.balance * (1 + monthlyReturn)
+          scenarios.alwaysRoth.balance += afterTaxContribution
         }
 
-        // Switching scenario
-        if (!scenarios.switching.currentStrategy) {
+        // Scenario 3: Switching Strategy - CORRECTED
+        if (year === 1) {
           scenarios.switching.currentStrategy = optimalStrategy
+        } else {
+          const previousOptimal = scenarios.switching.currentStrategy
+          if (previousOptimal !== optimalStrategy) {
+            switchPoints.push({
+              age: currentAgeInYear,
+              year: 2025 + year,
+              switchTo: optimalStrategy,
+              switchFrom: previousOptimal,
+              reason: `Tax difference: ${taxDifference.toFixed(1)} points (${taxRateThisYear}% vs ${retirementTaxRate}%)`,
+              salary: salary,
+              taxRate: taxRateThisYear,
+              traditionalBalance: scenarios.switching.traditionalBalance,
+              rothBalance: scenarios.switching.rothBalance,
+            })
+            scenarios.switching.currentStrategy = optimalStrategy
+          }
         }
 
-        // Check if we should switch
-        if (scenarios.switching.currentStrategy !== optimalStrategy) {
-          scenarios.switching.currentStrategy = optimalStrategy
-          switchPoints.push({
-            age: currentAgeInYear,
-            year: 2025 + year,
-            switchTo: optimalStrategy,
-            reason: `Tax rate: ${taxRateThisYear}% vs retirement: ${retirementTaxRate}%`,
-            salary: salary,
-            taxRate: taxRateThisYear,
-            traditionalBalance: scenarios.switching.traditionalBalance,
-            rothBalance: scenarios.switching.rothBalance,
-          })
-        }
-
-        // Apply contributions for switching strategy
+        // Apply contributions based on current strategy
         for (let month = 0; month < 12; month++) {
           scenarios.switching.traditionalBalance = scenarios.switching.traditionalBalance * (1 + monthlyReturn)
           scenarios.switching.rothBalance = scenarios.switching.rothBalance * (1 + monthlyReturn)
 
           if (scenarios.switching.currentStrategy === "Traditional") {
-            const preTaxContribution = monthlyContribution / (1 - taxRateThisYear / 100)
+            const preTaxContribution = afterTaxContribution / (1 - taxRateThisYear / 100)
             scenarios.switching.traditionalBalance += preTaxContribution
-          } else {
-            scenarios.switching.rothBalance += monthlyContribution
+          } else if (scenarios.switching.currentStrategy === "Roth") {
+            scenarios.switching.rothBalance += afterTaxContribution
           }
-        }
-
-        // Apply contributions for Both Accounts strategy (realistic split)
-        for (let month = 0; month < 12; month++) {
-          scenarios.bothAccounts.traditionalBalance = scenarios.bothAccounts.traditionalBalance * (1 + monthlyReturn)
-          scenarios.bothAccounts.rothBalance = scenarios.bothAccounts.rothBalance * (1 + monthlyReturn)
-
-          // Add monthly portions
-          const monthlyTraditional = traditionalAmount / 12
-          const monthlyRoth = rothAmount / 12
-          const preTaxTraditional = monthlyTraditional / (1 - taxRateThisYear / 100)
-
-          scenarios.bothAccounts.traditionalBalance += preTaxTraditional
-          scenarios.bothAccounts.rothBalance += monthlyRoth
         }
       } else {
         // Year 0 - set initial strategy
         scenarios.switching.currentStrategy = optimalStrategy
       }
 
+  
+
       // Calculate after-tax values for comparison
       const alwaysTraditionalAfterTax = scenarios.alwaysTraditional.balance * (1 - retirementTaxRate / 100)
       const alwaysRothAfterTax = scenarios.alwaysRoth.balance
       const switchingTraditionalAfterTax = scenarios.switching.traditionalBalance * (1 - retirementTaxRate / 100)
       const switchingTotal = switchingTraditionalAfterTax + scenarios.switching.rothBalance
-      const bothTraditionalAfterTax = scenarios.bothAccounts.traditionalBalance * (1 - retirementTaxRate / 100)
-      const bothTotal = bothTraditionalAfterTax + scenarios.bothAccounts.rothBalance
 
       yearlyData.push({
         age: currentAgeInYear,
@@ -243,23 +219,23 @@ function DataAnalysis() {
         rothBalance: scenarios.switching.rothBalance,
         traditionalAfterTax: switchingTraditionalAfterTax,
 
-        // Both accounts strategy balances
-        bothTraditionalBalance: scenarios.bothAccounts.traditionalBalance,
-        bothRothBalance: scenarios.bothAccounts.rothBalance,
-        bothTraditionalAfterTax: bothTraditionalAfterTax,
+
 
         // Scenario comparisons (after-tax values)
         alwaysTraditional: alwaysTraditionalAfterTax,
         alwaysRoth: alwaysRothAfterTax,
         switchingStrategy: switchingTotal,
-        bothAccountsStrategy: bothTotal,
+
 
         // Strategy info
         currentStrategy: scenarios.switching.currentStrategy,
         traditionalAmount: traditionalAmount,
         rothAmount: rothAmount,
         contributingTo: scenarios.switching.currentStrategy,
+        taxDifference: taxDifference,
       })
+
+
     }
 
     // Calculate final results
@@ -268,13 +244,12 @@ function DataAnalysis() {
       "Always Traditional": finalData.alwaysTraditional,
       "Always Roth": finalData.alwaysRoth,
       "Switching Strategy": finalData.switchingStrategy,
-      "Both Accounts Strategy": finalData.bothAccountsStrategy,
     }
 
     const bestValue = Math.max(...Object.values(strategies))
     const recommendation = Object.keys(strategies).find((key) => strategies[key] === bestValue)
 
-    return {
+ return {
       yearlyData,
       switchPoints,
       scenarios,
@@ -381,6 +356,132 @@ function DataAnalysis() {
               className="custom-slider"
               style={getSliderTrackStyle(startingBalance, 0, 100000)}
             />
+          </div>
+        </fieldset>
+
+        {/* Preset Scenarios */}
+        <fieldset>
+          <h2 style={{ textAlign: "center" }}>Quick Test Scenarios</h2>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
+              gap: "1rem",
+              marginBottom: "1rem",
+            }}
+          >
+            <button
+              className="submit-btn"
+              onClick={() => {
+                setCurrentAge(30)
+                setRetirementAge(65)
+                setExpectedReturn(7)
+                setStartingBalance(10000)
+                setSimpleIncome(75000)
+                setSimpleContribution(500)
+                setSalaryGrowthRate(3)
+                setDesiredRetirementIncome(60000)
+                setSocialSecurityIncome(20000)
+                setOtherRetirementIncome(5000)
+              }}
+              style={{ padding: "1rem", fontSize: "0.9rem" }}
+            >
+              📊 Default Scenario
+              <br />
+              <small>Traditional usually wins</small>
+            </button>
+
+            <button
+              className="submit-btn"
+              onClick={() => {
+                setCurrentAge(25)
+                setRetirementAge(67)
+                setExpectedReturn(8)
+                setStartingBalance(5000)
+                setSimpleIncome(45000)
+                setSimpleContribution(400)
+                setSalaryGrowthRate(6)
+                setDesiredRetirementIncome(100000)
+                setSocialSecurityIncome(25000)
+                setOtherRetirementIncome(10000)
+              }}
+              style={{ padding: "1rem", fontSize: "0.9rem", backgroundColor: "#2e7d32" }}
+            >
+              🚀 Career Growth
+              <br />
+              <small>Switching strategy wins</small>
+            </button>
+
+            <button
+              className="submit-btn"
+              onClick={() => {
+                setCurrentAge(28)
+                setRetirementAge(65)
+                setExpectedReturn(7.5)
+                setStartingBalance(15000)
+                setSimpleIncome(65000) // Lower current income
+                setSimpleContribution(583)
+                setSalaryGrowthRate(2) // Lower growth
+                setDesiredRetirementIncome(140000) // Much higher retirement income
+                setSocialSecurityIncome(35000)
+                setOtherRetirementIncome(20000)
+              }}
+              style={{ padding: "1rem", fontSize: "0.9rem", backgroundColor: "#1976d2" }}
+            >
+              💰 High Retirement Income
+              <br />
+              <small>Roth strategy wins</small>
+            </button>
+
+            <button
+              className="submit-btn"
+              onClick={() => {
+                setCurrentAge(22)
+                setRetirementAge(65)
+                setExpectedReturn(9)
+                setStartingBalance(2000)
+                setSimpleIncome(35000)
+                setSimpleContribution(300)
+                setSalaryGrowthRate(8)
+                setDesiredRetirementIncome(75000)
+                setSocialSecurityIncome(20000)
+                setOtherRetirementIncome(5000)
+              }}
+              style={{ padding: "1rem", fontSize: "0.9rem", backgroundColor: "#ff9800" }}
+            >
+              🎓 Young Professional
+              <br />
+              <small>Dramatic income growth</small>
+            </button>
+
+            <button
+              className="submit-btn"
+              onClick={() => {
+                setCurrentAge(40)
+                setRetirementAge(70)
+                setExpectedReturn(6)
+                setStartingBalance(50000)
+                setSimpleIncome(150000)
+                setSimpleContribution(667)
+                setSalaryGrowthRate(1.5)
+                setDesiredRetirementIncome(90000)
+                setSocialSecurityIncome(35000)
+                setOtherRetirementIncome(20000)
+              }}
+              style={{ padding: "1rem", fontSize: "0.9rem", backgroundColor: "#9c27b0" }}
+            >
+              🏢 High Earner
+              <br />
+              <small>Late starter, high income</small>
+            </button>
+          </div>
+          <div style={{ textAlign: "center", padding: "1rem", backgroundColor: "#f0f8ff", borderRadius: "8px" }}>
+            <p>
+              <strong>Click any scenario above to see when different strategies win!</strong>
+            </p>
+            <p style={{ fontSize: "0.9rem", color: "#666" }}>
+              Each button sets up a realistic financial situation where a different strategy performs best.
+            </p>
           </div>
         </fieldset>
 
@@ -581,12 +682,6 @@ function DataAnalysis() {
               <div className="summary-number">${Math.round(analysis.finalValues["Switching Strategy"] / 1000)}k</div>
               <div className="summary-label">Switching Strategy</div>
             </div>
-            <div className="summary-card" style={{ backgroundColor: "#e8f5e9", borderColor: "#4caf50" }}>
-              <div className="summary-number">
-                ${Math.round(analysis.finalValues["Both Accounts Strategy"] / 1000)}k
-              </div>
-              <div className="summary-label">Both Accounts Strategy</div>
-            </div>
             <div className="summary-card optimal-card">
               <div className="summary-badge">{analysis.recommendation}</div>
               <div className="summary-label">Best Strategy</div>
@@ -624,13 +719,6 @@ function DataAnalysis() {
                   stroke="#1976d2"
                   strokeWidth={2}
                   name="Switching Strategy"
-                />
-                <Line
-                  type="monotone"
-                  dataKey="bothAccountsStrategy"
-                  stroke="#4caf50"
-                  strokeWidth={3}
-                  name="Both Accounts Strategy"
                 />
               </LineChart>
             </ResponsiveContainer>
@@ -740,7 +828,9 @@ function DataAnalysis() {
                       <div className="switch-year">
                         Age {point.age} ({point.year})
                       </div>
-                      <div className="switch-strategy">Switch to {point.switchTo}</div>
+                      <div className="switch-strategy">
+                        Switch from {point.switchFrom} to {point.switchTo}
+                      </div>
                       <div style={{ fontSize: "0.8rem", color: "#666" }}>{point.reason}</div>
                     </div>
                     <div className="switch-values">
@@ -759,78 +849,7 @@ function DataAnalysis() {
         </fieldset>
       </div>
 
-      {/* Both Accounts Strategy Breakdown */}
-      <div className="form-box" style={{ marginTop: "2rem" }}>
-        <h3 style={{ textAlign: "center" }}>Both Accounts Strategy - Annual Contribution Split</h3>
-        <fieldset>
-          <div style={{ height: "400px", width: "100%" }}>
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={analysis.yearlyData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="age" />
-                <YAxis tickFormatter={(value) => `$${(value / 1000).toFixed(1)}k`} />
-                <Tooltip
-                  formatter={(value, name) => [`$${Number(value).toLocaleString()}`, name]}
-                  labelFormatter={(label) => `Age: ${label}`}
-                />
-                <Legend />
-                <Bar
-                  dataKey="traditionalAmount"
-                  stackId="contributions"
-                  fill="#FF5733"
-                  name="Traditional Contribution"
-                />
-                <Bar dataKey="rothAmount" stackId="contributions" fill="#2e7d32" name="Roth Contribution" />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-          <div style={{ marginTop: "1rem", padding: "1rem", backgroundColor: "#f8f9fa", borderRadius: "8px" }}>
-            <h4>How the Split Works Each Year:</h4>
-            <div style={{ maxHeight: "200px", overflowY: "auto", fontSize: "0.9rem" }}>
-              <table style={{ width: "100%", borderCollapse: "collapse" }}>
-                <thead>
-                  <tr style={{ backgroundColor: "#e9ecef" }}>
-                    <th style={{ padding: "8px", border: "1px solid #ddd" }}>Age</th>
-                    <th style={{ padding: "8px", border: "1px solid #ddd" }}>Salary</th>
-                    <th style={{ padding: "8px", border: "1px solid #ddd" }}>Tax Rate</th>
-                    <th style={{ padding: "8px", border: "1px solid #ddd" }}>Traditional</th>
-                    <th style={{ padding: "8px", border: "1px solid #ddd" }}>Roth</th>
-                    <th style={{ padding: "8px", border: "1px solid #ddd", fontSize: "0.8rem" }}>Logic</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {analysis.yearlyData.slice(1, 11).map((year, index) => {
-                    let logic = ""
-                    if (year.salary < 50000) logic = "Low income → Favor Roth"
-                    else if (year.salary < 100000)
-                      logic =
-                        year.taxRate > retirementTaxRate + 3 ? "Tax advantage → More Traditional" : "Neutral → Balanced"
-                    else logic = "High income → Favor Traditional"
-
-                    return (
-                      <tr key={index}>
-                        <td style={{ padding: "6px", border: "1px solid #ddd" }}>{year.age}</td>
-                        <td style={{ padding: "6px", border: "1px solid #ddd" }}>
-                          ${(year.salary / 1000).toFixed(0)}k
-                        </td>
-                        <td style={{ padding: "6px", border: "1px solid #ddd" }}>{year.taxRate}%</td>
-                        <td style={{ padding: "6px", border: "1px solid #ddd" }}>
-                          ${year.traditionalAmount?.toLocaleString() || "0"}
-                        </td>
-                        <td style={{ padding: "6px", border: "1px solid #ddd" }}>
-                          ${year.rothAmount?.toLocaleString() || "0"}
-                        </td>
-                        <td style={{ padding: "6px", border: "1px solid #ddd", fontSize: "0.8rem" }}>{logic}</td>
-                      </tr>
-                    )
-                  })}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </fieldset>
-      </div>
-
+     
       {/* Retirement Tax Rate Explanation */}
       <div className="form-box" style={{ marginTop: "2rem" }}>
         <h3 style={{ textAlign: "center" }}>Understanding Retirement Tax Rate</h3>
@@ -882,38 +901,9 @@ function DataAnalysis() {
         </fieldset>
       </div>
 
-      {/* Both Accounts Strategy Explanation */}
-      <div className="form-box" style={{ marginTop: "2rem" }}>
-        <h3 style={{ textAlign: "center" }}>How the Both Accounts Strategy Works</h3>
-        <fieldset>
-          <div style={{ padding: "1rem", backgroundColor: "#f8f9fa", borderRadius: "8px" }}>
-            <h4>Realistic Both Accounts Approach (Like CSV Data):</h4>
-            <ul style={{ paddingLeft: "1.5rem" }}>
-              <li>
-                <strong>Low Income ({"<"}$50k):</strong> $6k Roth + $1k Traditional
-                <br />
-                <small>Pay taxes now when rate is low</small>
-              </li>
-              <li>
-                <strong>Medium Income ($50k-$100k):</strong> Split based on tax advantage
-                <br />
-                <small>More Traditional if current rate {">"} retirement rate</small>
-              </li>
-              <li>
-                <strong>High Income ({">"}$100k):</strong> $6k Traditional + $1k Roth
-                <br />
-                <small>Maximize tax deductions when rate is high</small>
-              </li>
-            </ul>
+      
 
-            <p style={{ marginTop: "1rem", fontSize: "0.9rem", color: "#666" }}>
-              This mirrors real-world CSV data where people adjust their strategy based on their current income and tax
-              situation, rather than arbitrary percentages.
-            </p>
-          </div>
-        </fieldset>
-      </div>
-
+         
       {/* Strategy Comparison Explanation */}
       <div className="form-box" style={{ marginTop: "2rem" }}>
         <h3 style={{ textAlign: "center" }}>Strategy Comparison: What's the Difference?</h3>
@@ -936,59 +926,9 @@ function DataAnalysis() {
                 </li>
               </ul>
             </div>
-
-            <div className="recommendation-section">
-              <h4 style={{ color: "#4caf50" }}>⚖️ Both Accounts Strategy</h4>
-              <ul style={{ paddingLeft: "1.5rem" }}>
-                <li>
-                  <strong>Uses both accounts simultaneously</strong>
-                </li>
-                <li>Splits contributions based on income level and tax rates</li>
-                <li>Adjusts the split percentage each year</li>
-                <li>Example: 70% Traditional + 30% Roth when income is high</li>
-                <li>
-                  <strong>Pro:</strong> Tax diversification, hedge against uncertainty
-                </li>
-                <li>
-                  <strong>Con:</strong> May not be "perfectly" optimal
-                </li>
-              </ul>
-            </div>
-
-            <div className="recommendation-section">
-              <h4 style={{ color: "#1976d2" }}>🎯 Why Both Strategies Matter</h4>
-              <ul style={{ paddingLeft: "1.5rem" }}>
-                <li>
-                  <strong>Switching:</strong> Best if you're confident about future tax rates
-                </li>
-                <li>
-                  <strong>Both Accounts:</strong> Best if you want to hedge your bets
-                </li>
-                <li>Real world: Most people use Both Accounts approach</li>
-                <li>Tax laws change, income varies, life happens</li>
-                <li>Having both account types gives you flexibility in retirement</li>
-              </ul>
-            </div>
-
-            <div className="recommendation-section">
-              <h4 style={{ color: "#ff9800" }}>📊 What the Charts Show</h4>
-              <ul style={{ paddingLeft: "1.5rem" }}>
-                <li>
-                  <strong>Tax Bracket Chart:</strong> When each strategy makes sense
-                </li>
-                <li>
-                  <strong>Switching Timeline:</strong> Exact ages when to switch
-                </li>
-                <li>
-                  <strong>Both Accounts Split:</strong> How much to put in each account yearly
-                </li>
-                <li>
-                  <strong>Final Values:</strong> Which strategy wins in the end
-                </li>
-              </ul>
-            </div>
           </div>
 
+           
           <div style={{ marginTop: "1.5rem", padding: "1rem", backgroundColor: "#fff3e0", borderRadius: "8px" }}>
             <h4>💡 Key Insight: Why Traditional Often Wins</h4>
             <p>
@@ -1004,6 +944,142 @@ function DataAnalysis() {
               <strong>Try this:</strong> Increase your "Desired Annual Retirement Income" to see when Roth becomes
               competitive!
             </p>
+          </div>
+        </fieldset>
+      </div>
+
+      {/* Realistic Switching Thresholds Explanation */}
+      <div className="form-box" style={{ marginTop: "2rem" }}>
+        <h3 style={{ textAlign: "center" }}>Why Switching Rarely Happens in Real Life</h3>
+        <fieldset>
+          <div style={{ padding: "1rem", backgroundColor: "#fff8e1", borderRadius: "8px" }}>
+            <h4>🎯 Realistic Switching Thresholds:</h4>
+            <ul style={{ paddingLeft: "1.5rem" }}>
+              <li>
+                <strong>Traditional wins big:</strong> Current tax rate is 8+ points higher than retirement
+              </li>
+              <li>
+                <strong>Roth wins big:</strong> Retirement tax rate is 5+ points higher than current
+              </li>
+              <li>
+                <strong>Young person exception:</strong> Under 30, income {"<"}$60k, small tax difference → Roth
+              </li>
+              <li>
+                <strong>High earner exception:</strong> Income {">"}$120k, decent tax savings → Traditional
+              </li>
+              <li>
+                <strong>Default:</strong> Stick with current strategy (no switching for small differences)
+              </li>
+            </ul>
+
+            <h4 style={{ marginTop: "1rem" }}>💡 Why Small Tax Differences Don't Matter:</h4>
+            <div style={{ backgroundColor: "#f5f5f5", padding: "1rem", borderRadius: "4px", marginTop: "0.5rem" }}>
+              <p>
+                <strong>Example:</strong> 24% current vs 22% retirement (2% difference)
+              </p>
+              <ul style={{ paddingLeft: "1.5rem", fontSize: "0.9rem" }}>
+                <li>Traditional: Save 24% now, pay 22% later = 2% net benefit</li>
+                <li>Roth: Pay 24% now, save 22% later = 2% net cost</li>
+                <li>
+                  <strong>Result:</strong> Only 2% difference over 30+ years!
+                </li>
+                <li>
+                  <strong>Reality:</strong> Tax law changes, income varies, other factors matter more
+                </li>
+              </ul>
+            </div>
+
+            <h4 style={{ marginTop: "1rem" }}>🔄 When Switching Actually Makes Sense:</h4>
+            <div style={{ backgroundColor: "#e8f5e9", padding: "1rem", borderRadius: "4px", marginTop: "0.5rem" }}>
+              <p>
+                <strong>Scenario 1:</strong> Young person gets big promotion
+              </p>
+              <ul style={{ paddingLeft: "1.5rem", fontSize: "0.9rem" }}>
+                <li>Age 25: $40k salary (12% tax) → Roth makes sense</li>
+                <li>Age 30: $100k salary (24% tax) → Switch to Traditional</li>
+                <li>
+                  <strong>Tax difference:</strong> 12% difference justifies switching
+                </li>
+              </ul>
+
+              <p style={{ marginTop: "1rem" }}>
+                <strong>Scenario 2:</strong> Career with dramatic income growth (YOUR SITUATION!)
+              </p>
+              <ul style={{ paddingLeft: "1.5rem", fontSize: "0.9rem" }}>
+                <li>Early career: $50k-70k salary (12-22% tax) → Start with Roth</li>
+                <li>Mid career: $120k+ salary (24-32% tax) → Switch to Traditional</li>
+                <li>Peak career: $200k+ salary (35% tax) → Definitely Traditional</li>
+                <li>
+                  <strong>Why this works:</strong> Pay low taxes early (Roth), avoid high taxes later (Traditional)
+                </li>
+              </ul>
+
+              <p style={{ marginTop: "1rem" }}>
+                <strong>Scenario 3:</strong> High earner planning expensive retirement
+              </p>
+              <ul style={{ paddingLeft: "1.5rem", fontSize: "0.9rem" }}>
+                <li>Working: $150k salary (32% tax) → Traditional makes sense</li>
+                <li>Retirement: $120k withdrawals (24% tax) → 8% difference, Traditional wins</li>
+                <li>But if planning $200k retirement: (35% tax) → Should have done Roth!</li>
+              </ul>
+
+              <p style={{ marginTop: "1rem" }}>
+                <strong>Scenario 4:</strong> Professional/Business owner trajectory
+              </p>
+              <ul style={{ paddingLeft: "1.5rem", fontSize: "0.9rem" }}>
+                <li>Resident/Student: $30k income (12% tax) → Roth is perfect</li>
+                <li>Early practice: $80k income (22% tax) → Still favor Roth</li>
+                <li>Established practice: $300k+ income (35% tax) → Switch to Traditional</li>
+                <li>
+                  <strong>Result:</strong> Roth money grows tax-free for decades, Traditional saves huge taxes at peak
+                  earnings
+                </li>
+              </ul>
+            </div>
+
+            <h4 style={{ marginTop: "1rem" }}>💡 The "Income Growth" Strategy:</h4>
+            <div style={{ backgroundColor: "#fff3e0", padding: "1rem", borderRadius: "4px", marginTop: "0.5rem" }}>
+              <p>
+                <strong>If you expect your income to grow dramatically:</strong>
+              </p>
+              <ul style={{ paddingLeft: "1.5rem" }}>
+                <li>
+                  <strong>Start with Roth</strong> when income is low (pay taxes at low rates)
+                </li>
+                <li>
+                  <strong>Switch to Traditional</strong> when income gets high (avoid taxes at high rates)
+                </li>
+              </ul>
+
+              <p style={{ marginTop: "1rem", fontSize: "0.9rem", fontStyle: "italic" }}>
+                This is why the calculator shows switching for dramatic income growth scenarios - it's actually a very
+                smart strategy!
+              </p>
+            </div>
+
+            <h4 style={{ marginTop: "1rem" }}>🚀 Test Your Career Growth Scenario:</h4>
+            <div style={{ backgroundColor: "#f3e5f5", padding: "1rem", borderRadius: "4px", marginTop: "0.5rem" }}>
+              <p>
+                <strong>Try this to see switching in action:</strong>
+              </p>
+              <ol style={{ paddingLeft: "1.5rem" }}>
+                <li>Set current age to 25</li>
+                <li>Set current salary to $45,000 (12% tax bracket)</li>
+                <li>Set salary growth to 6-8% (aggressive career growth)</li>
+                <li>Set desired retirement income to $80,000</li>
+                <li>Watch the switching strategy outperform!</li>
+              </ol>
+
+              <p style={{ marginTop: "1rem" }}>
+                <strong>What you'll see:</strong> Start with Roth (low taxes), switch to Traditional around age 35-40
+                when salary hits $100k+ (high taxes).
+              </p>
+
+              <p style={{ marginTop: "0.5rem", fontSize: "0.9rem", color: "#666" }}>
+                This mirrors real career paths for doctors, lawyers, engineers, business owners, and other professionals
+                with steep income growth curves.
+              </p>
+            </div>
           </div>
         </fieldset>
       </div>
