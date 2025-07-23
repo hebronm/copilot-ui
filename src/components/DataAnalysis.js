@@ -267,9 +267,12 @@ function DataAnalysis() {
     simpleContribution,
     salaryGrowthRate,
     yearByYearData,
-    desiredRetirementIncome,
-    socialSecurityIncome,
-    otherRetirementIncome,
+    
+    //Don't need?
+
+    //desiredRetirementIncome,
+    //socialSecurityIncome,
+    //otherRetirementIncome,
   ])
 
   const resetForm = () => {
@@ -538,6 +541,7 @@ function DataAnalysis() {
               <br />
               <small>
                 Based on total retirement income of $
+                {/*Social Security Income is taxed only up to 85%*/}
                 {(desiredRetirementIncome + socialSecurityIncome * 0.85 + otherRetirementIncome).toLocaleString()}
               </small>
             </div>
