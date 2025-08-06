@@ -100,7 +100,12 @@ npm install react-router-dom
 ```
 npm install @mui/material @emotion/react @emotion/styled @mui/icons-material @mui/x-charts
 ```
- 7. To start the application, run the following command:
+
+7. Run the following command to install the recharts library:
+```
+npm install recharts
+```
+8. To start the application, run the following command:
 ```
 npm start
 ```
