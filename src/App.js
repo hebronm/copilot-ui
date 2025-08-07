@@ -6,6 +6,7 @@ import { BrowserRouter as Router, Routes, Route, Link, useLocation } from "react
 import FinancialForm from "./components/FinancialForm"
 import DataAnalysis from "./components/DataAnalysis"
 import EmployeeTable from "./components/EmployeeTable"
+import FAQ from "./components/faq"
 
 function Navigation({ currentUser, onLogout }) {
   const location = useLocation()
@@ -32,6 +33,9 @@ function Navigation({ currentUser, onLogout }) {
         </Link>
         <Link to="/table" className={`tab-link ${location.pathname === "/table" ? "active" : ""}`}>
           Data Table
+        </Link>
+        <Link to="/faq" className={`tab-link ${location.pathname === "/faq" ? "active" : ""}`}>
+        FAQ / Information
         </Link>
       </nav>
     </div>
@@ -126,6 +130,7 @@ function App() {
             <Route path="/" element={<FinancialForm />} />
             <Route path="/analysis" element={<DataAnalysis />} />
             <Route path="/table" element={<EmployeeTable />} />
+            <Route path="/faq" element={<FAQ />} />
           </Routes>
         </div>
       </div>
