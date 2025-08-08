@@ -1,0 +1,92 @@
+.dashboard {
+  padding: 50px;
+  font-family: Arial, sans-serif;
+}
+
+.dashboard-header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  font-size: 24px;
+  margin-bottom: 30px;
+}
+
+.dashboard-header h1 {
+  margin: 0;
+  justify-content: center;
+}
+
+.dashboard-header p {
+    margin-top: 10px;
+    font-size: 30px;
+    text-align: left;
+    color: rgb(134, 134, 134);
+}
+
+.top-boxes {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 30px;
+}
+
+.top-box {
+  flex: 1;
+  margin: 0 10px;
+  height: 100px;
+  background-color: #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  border-radius: 8px;
+}
+
+.clients-section {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+}
+
+.clients-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.add-client-btn {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.clients-table {
+  width: 100%;
+  align-items: center;
+  border-collapse: collapse;
+  font-size: 20px;
+}
+
+.clients-table th,
+.clients-table td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: center;
+}
+
+.clients-table th {
+  background-color: #f4f4f4;
+}
+
+.view-btn {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+}

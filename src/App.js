@@ -3,15 +3,15 @@
 import { useState, useEffect } from "react"
 import "./App.css"
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from "react-router-dom"
-import FinancialForm from "./components/FinancialForm"
-import DataAnalysis from "./components/DataAnalysis"
-import EmployeeTable from "./components/EmployeeTable"
-import FAQ from "./components/faq"
+import { Dashboard, ClientDetail, IRACalculator, DataAnalysis, EmployeeTable, FAQ } from './components'; // Update index if adding new components
+
 
 function Navigation({ currentUser, onLogout }) {
   const location = useLocation()
+  const showNavTabs = location.pathname === "/calculators";
 
   return (
+    
     <div className="app-header">
       <div className="header-content">
         <div className="header-left">
@@ -24,21 +24,25 @@ function Navigation({ currentUser, onLogout }) {
           </button>
         </div>
       </div>
-      <nav className="nav-tabs">
-        <Link to="/" className={`tab-link ${location.pathname === "/" ? "active" : ""}`}>
-          IRA Calculator
-        </Link>
-        <Link to="/analysis" className={`tab-link ${location.pathname === "/analysis" ? "active" : ""}`}>
-          Optimal Strategy
-        </Link>
-        <Link to="/table" className={`tab-link ${location.pathname === "/table" ? "active" : ""}`}>
-          Data Table
-        </Link>
-        <Link to="/faq" className={`tab-link ${location.pathname === "/faq" ? "active" : ""}`}>
-        FAQ / Information
-        </Link>
-      </nav>
+      {/* ✅ Only show nav-tabs on the /calculators route */}
+        {showNavTabs && (
+          <nav className="nav-tabs">
+            <Link to="/iraCalculator" className={`tab-link ${location.pathname === "/iraCalculator" ? "active" : ""}`}>
+              IRA Calculator
+            </Link>
+            <Link to="/analysis" className={`tab-link ${location.pathname === "/analysis" ? "active" : ""}`}>
+              Optimal Strategy
+            </Link>
+            <Link to="/table" className={`tab-link ${location.pathname === "/table" ? "active" : ""}`}>
+              Data Table
+            </Link>
+            <Link to="/faq" className={`tab-link ${location.pathname === "/faq" ? "active" : ""}`}>
+            FAQ / Information
+            </Link>
+          </nav>
+        )}
     </div>
+    
   )
 }
 
@@ -127,10 +131,12 @@ function App() {
         <Navigation currentUser={currentUser} onLogout={handleLogout} />
         <div className="main-content">
           <Routes>
-            <Route path="/" element={<FinancialForm />} />
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/client/:id" element={<ClientDetail />} />
+            <Route path="/iraCalculator" element={<IRACalculator />} /> 
             <Route path="/analysis" element={<DataAnalysis />} />
             <Route path="/table" element={<EmployeeTable />} />
-            <Route path="/faq" element={<FAQ />} />
+            <Route path="/FAQ" element={<FAQ />} />
           </Routes>
         </div>
       </div>
