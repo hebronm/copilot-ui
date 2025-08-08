@@ -1,7 +1,6 @@
 import React from "react"
 
 
-
 /** 
  * As a preface, there are a lot of information that we need to change on this as we learned more financial information along the way.
  * List of things to include or alter:
