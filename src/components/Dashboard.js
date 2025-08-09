@@ -27,6 +27,15 @@ function Dashboard() {
       </header>
 
       {/* Top Boxes */}
+
+      {/*Need to work on this properly later on
+      Show: 
+      - Total Clients
+      - Assets Under Management
+      - 2 other free boxes (Real Estate Investment, Retirement Accts)
+      - Maybe avg age and avg income or maybe upcoming birthdays
+       */}
+
       <div className="top-boxes">
         {[1, 2, 3, 4].map((num) => (
           <div key={num} className="top-box">
@@ -39,10 +48,16 @@ function Dashboard() {
       <div className="clients-section">
         <div className="clients-header">
           <h2>Clients</h2>
+
+          {/* Need to implement this button function later*/}
+
           <button className="add-client-btn">Add Client</button>
         </div>
 
         <table className="clients-table">
+            
+            {/*Need to rework the spacing of the table */}
+
           <thead>
             <tr>
               <th>Name</th>
@@ -63,6 +78,15 @@ function Dashboard() {
                     onClick={() => handleViewClick(client.id)}
                     >
                     View
+                  </button>
+                  <button
+                    className="delete-btn"
+
+                    // implement this function later
+                    //onClick={() => handleDeleteClick(client.id)}
+
+                    >
+                    Delete
                   </button>
                 </td>
               </tr>

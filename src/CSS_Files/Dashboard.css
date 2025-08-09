@@ -90,3 +90,12 @@
   border-radius: 4px;
   cursor: pointer;
 }
+
+.delete-btn {
+  background-color: #cf1919;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+}
