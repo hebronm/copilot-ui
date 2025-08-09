@@ -10,7 +10,7 @@ function getSliderTrackStyle(value, min = 0, max = 100) {
   }
 }
 
-function FinancialForm() {
+function IRACalculator() {
   const [firstName, setFirstName] = useState("")
   const [lastName, setLastName] = useState("")
   const [email, setEmail] = useState("")
@@ -283,4 +283,4 @@ function FinancialForm() {
   )
 }
 
-export default FinancialForm
+export default IRACalculator
