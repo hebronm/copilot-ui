@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import "./App.css"
+import "./CSS_Files/App.css"
 import { BrowserRouter as Router, Routes, Route, Link, useLocation, useNavigate } from "react-router-dom"
 import { Dashboard, ClientDetail, IRACalculator, DataAnalysis, EmployeeTable, FAQ } from './components'; // Update index if adding new components
 
