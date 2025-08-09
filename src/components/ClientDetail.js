@@ -3,6 +3,8 @@ import { useParams } from 'react-router-dom';
 import '../CSS_Files/ClientDetail.css';
 
 import Overview from './Overview'
+import IRACalculator from './IRACalculator'
+import DataAnalysis from './DataAnalysis'
 
 function ClientDetail() {
   const { id } = useParams();
@@ -57,6 +59,7 @@ function ClientDetail() {
   // Tab management
   const tabs = ['Overview', 'Calculators', 'Investments', 'Retirement'];
   const [activeTab, setActiveTab] = useState('Overview');
+  const [activeCalculatorTab, setActiveCalculatorTab] = useState('Simple'); // Track sub-tabs for Calculators
 
   useEffect(() => {
     // Later: Fetch client data from API using ID
@@ -97,19 +100,37 @@ useEffect(() => {
       {/* Tab Content */}
       <div className="tab-content">
         {activeTab === 'Overview' && <Overview client={client} />}
+
+        {activeTab === 'Calculators' && (
+          <>
+            {/* Sub-tabs only visible in Calculators tab */}
+            <nav className="calculator-sub-nav">
+              <button
+                className={`sub-nav-tab ${activeCalculatorTab === 'Simple' ? 'active' : ''}`}
+                onClick={() => setActiveCalculatorTab('Simple')}
+              >
+                Simple
+              </button>
+              <button
+                className={`sub-nav-tab ${activeCalculatorTab === 'Analysis' ? 'active' : ''}`}
+                onClick={() => setActiveCalculatorTab('Analysis')}
+              >
+                Analysis
+              </button>
+            </nav>
+
+            {/* Content based on active sub-tab */}
+            {activeCalculatorTab === 'Simple' && <IRACalculator client={client} />}
+            {activeCalculatorTab === 'Analysis' && <DataAnalysis client={client} />}
+          </>
+        )}
         
-        {activeTab !== 'Overview' && (
+        {activeTab !== 'Overview' && activeTab !== 'Calculators' && (
           <p>{activeTab} content goes here (placeholder)</p>
         )}
       </div>
     </div>
   )
-
-
-
-
-
-
 
 
 
