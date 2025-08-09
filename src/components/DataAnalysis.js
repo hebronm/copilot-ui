@@ -1,5 +1,5 @@
 "use client"
-
+import { calculateNetSalary, calculateRelativeTaxPercentage } from './functions.js'
 import { useState, useMemo } from "react"
 import {
   LineChart,
@@ -12,6 +12,7 @@ import {
   ResponsiveContainer,
   BarChart,
   Bar,
+  ReferenceLine 
 } from "recharts"
 
 function getSliderTrackStyle(value, min = 0, max = 100) {
@@ -21,6 +22,7 @@ function getSliderTrackStyle(value, min = 0, max = 100) {
   }
 }
 
+/*
 // Tax bracket calculator (simplified 2024 brackets)
 function getTaxRate(income) {
   if (income <= 11000) return 10
@@ -31,11 +33,26 @@ function getTaxRate(income) {
   if (income <= 578125) return 35
   return 37
 }
+*/
+
+const taxes2024 = [
+  [11000, 10],   
+  [44725, 12],  
+  [95375, 22], 
+  [182050, 24],
+  [231250, 32],
+  [578125, 35], 
+  [Infinity, 37]
+];
+
+//create a section for tax bracket ranges and default it ot taxes2024
+//save it in a variable just like the rest (currentAge, startingSalary, etc.)
+
 
 // Calculate realistic retirement tax rate based on withdrawal amount
 function calculateRetirementTaxRate(annualWithdrawal, socialSecurity = 20000, otherIncome = 5000) {
   const totalRetirementIncome = annualWithdrawal + socialSecurity * 0.85 + otherIncome // 85% of SS is taxable
-  return getTaxRate(totalRetirementIncome)
+  return calculateRelativeTaxPercentage(taxes2024, totalRetirementIncome)
 }
 
 function DataAnalysis() {
@@ -87,12 +104,12 @@ function DataAnalysis() {
       if (useYearByYear && yearByYearData[year]) {
         return {
           salary: yearByYearData[year].salary,
-          contribution: yearByYearData[year].contribution,
+          contribution: yearByYearData[year].contribution
         }
       } else {
         return {
           salary: simpleIncome * Math.pow(1 + salaryGrowthRate / 100, year),
-          contribution: simpleContribution * Math.pow(1 + salaryGrowthRate / 100, year),
+          contribution: simpleContribution * Math.pow(1 + salaryGrowthRate / 100, year)
         }
       }
     }
@@ -102,7 +119,7 @@ function DataAnalysis() {
       alwaysTraditional: { balance: startingBalance },
       alwaysRoth: { balance: startingBalance },
       switching: {
-        traditionalBalance: startingBalance,
+        traditionalBalance: 0,
         rothBalance: 0,
         currentStrategy: null,
       },
@@ -115,38 +132,27 @@ function DataAnalysis() {
     for (let year = 0; year <= yearsToRetirement; year++) {
       const currentAgeInYear = currentAge + year
       const { salary, contribution } = getSalaryData(year)
-      const taxRateThisYear = getTaxRate(salary)
+      const taxRateThisYear = calculateRelativeTaxPercentage(taxes2024, salary)
       const monthlyContribution = contribution
 
-      // CORRECTED: More realistic switching thresholds
       const taxDifference = taxRateThisYear - retirementTaxRate
+    
       let optimalStrategy
 
-      if (taxDifference >= 4) {
-        // Current tax rate is 4+ points higher - Traditional wins
-        optimalStrategy = "Traditional"
-      } else if (taxDifference <= -3) {
-        // Retirement tax rate is 3+ points higher - Roth wins
-        optimalStrategy = "Roth"
-      } else if (currentAgeInYear < 35 && salary < 70000) {
-        // Young with moderate income - favor Roth for long growth
-        optimalStrategy = "Roth"
-      } else if (salary > 100000 && taxDifference >= 2) {
-        // High income with some tax savings - favor Traditional
+      if (taxDifference > 0) {
         optimalStrategy = "Traditional"
       } else {
-        // Default: stick with current strategy (no switching for small differences)
-        optimalStrategy = scenarios.switching.currentStrategy || "Traditional"
+        optimalStrategy = "Roth"
       } 
+      
+
 
       let traditionalAmount = 0
       let rothAmount = 0      
 
-
       // Apply growth and contributions for this year
       if (year > 0) {
         const afterTaxContribution = monthlyContribution
-
 
         // Scenario 1: Always Traditional
         for (let month = 0; month < 12; month++) {
@@ -184,19 +190,31 @@ function DataAnalysis() {
 
         // Apply contributions based on current strategy
         for (let month = 0; month < 12; month++) {
-          scenarios.switching.traditionalBalance = scenarios.switching.traditionalBalance * (1 + monthlyReturn)
-          scenarios.switching.rothBalance = scenarios.switching.rothBalance * (1 + monthlyReturn)
+          // Apply growth to both accounts
+          scenarios.switching.traditionalBalance *= (1 + monthlyReturn)
+          scenarios.switching.rothBalance *= (1 + monthlyReturn)
 
+          // Only contribute to one account based on current strategy
           if (scenarios.switching.currentStrategy === "Traditional") {
             const preTaxContribution = afterTaxContribution / (1 - taxRateThisYear / 100)
             scenarios.switching.traditionalBalance += preTaxContribution
-          } else if (scenarios.switching.currentStrategy === "Roth") {
+          } else {
             scenarios.switching.rothBalance += afterTaxContribution
           }
         }
       } else {
         // Year 0 - set initial strategy
+        if(optimalStrategy == "Roth"){
+          scenarios.switching.rothBalance = startingBalance;
+        } else {
+          scenarios.switching.traditionalBalance = startingBalance;
+        }
+
+        
+
         scenarios.switching.currentStrategy = optimalStrategy
+
+
       }
 
   
@@ -225,6 +243,7 @@ function DataAnalysis() {
         alwaysTraditional: alwaysTraditionalAfterTax,
         alwaysRoth: alwaysRothAfterTax,
         switchingStrategy: switchingTotal,
+        
 
 
         // Strategy info
@@ -290,7 +309,7 @@ function DataAnalysis() {
 
   const updateYearData = (yearIndex, field, value) => {
     const newData = [...yearByYearData]
-    newData[yearIndex] = { ...newData[yearIndex], [field]: Number(value) }
+    newData[yearIndex] = {...newData[yearIndex], [field]: Number(value) }
     setYearByYearData(newData)
   }
 
@@ -386,6 +405,7 @@ function DataAnalysis() {
                 setDesiredRetirementIncome(60000)
                 setSocialSecurityIncome(20000)
                 setOtherRetirementIncome(5000)
+
               }}
               style={{ padding: "1rem", fontSize: "0.9rem" }}
             >
@@ -587,7 +607,7 @@ function DataAnalysis() {
                 className="custom-slider"
                 style={getSliderTrackStyle(simpleIncome, 30000, 200000)}
               />
-              <small>Current tax bracket: {getTaxRate(simpleIncome)}%</small>
+              <small>Current tax bracket: {calculateRelativeTaxPercentage(taxes2024, simpleIncome)}%</small>
 
               <label className="label">
                 Monthly IRA Contribution: <b>${simpleContribution.toLocaleString()}</b>
@@ -649,7 +669,7 @@ function DataAnalysis() {
                           style={{ width: "80px", padding: "2px" }}
                         />
                       </td>
-                      <td>{getTaxRate(yearData.salary)}%</td>
+                      <td>{calculateRelativeTaxPercentage(taxes2024, yearData.salary)}%</td>
                     </tr>
                   ))}
                 </tbody>
@@ -730,6 +750,48 @@ function DataAnalysis() {
         </fieldset>
       </div>
 
+      {/* Growth of Switching only */}
+      <div className="form-box" style={{ marginTop: "2rem" }}>
+        <h3 style={{ textAlign: "center" }}>Switching Strategy Breakdown</h3>
+        <fieldset>
+          <div style={{ height: "400px", width: "100%" }}>
+            <ResponsiveContainer width="100%" height={300}>
+              <LineChart
+                data={analysis.yearlyData}
+                margin={{ top: 20, right: 30, left: 20, bottom: 0 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="age" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Line
+                  type="monotone"
+                  dataKey="switchingStrategy"
+                  stroke="#8884d8"
+                  name="Switching Total"
+                  strokeWidth={2}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="rothBalance"
+                  stroke="#82ca9d"
+                  name="Roth Portion"
+                  strokeWidth={2}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="traditionalAfterTax"
+                  stroke="#ffc658"
+                  name="Traditional Portion"
+                  strokeWidth={2}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </fieldset>
+      </div>
+
       {/* Tax Bracket and Salary Growth Chart */}
       <div className="form-box" style={{ marginTop: "2rem" }}>
         <h3 style={{ textAlign: "center" }}>Salary Growth & Tax Bracket Progression</h3>
@@ -796,48 +858,70 @@ function DataAnalysis() {
         <fieldset>
           <div style={{ height: "300px", width: "100%" }}>
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={analysis.yearlyData}>
+              <BarChart data={analysis.yearlyData} margin={{ top: 20, right: 30, left: 20, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="age" />
-                <YAxis tickFormatter={() => ""} />
+                <YAxis />
                 <Tooltip
                   formatter={(value, name, props) => [
-                    `${props.payload.currentStrategy} (Tax: ${props.payload.taxRate}%)`,
-                    "Strategy",
+                    `$${value.toLocaleString()}`,
+                    name,
                   ]}
                   labelFormatter={(label) => `Age: ${label}`}
                 />
+                <Legend />
+
+                {/* Stacked bars for Roth and Traditional balances */}
                 <Bar
-                  dataKey={(entry) => (entry.currentStrategy === "Traditional" ? 1 : 0)}
-                  stackId="strategy"
-                  fill="#FF5733"
-                  name="Traditional"
+                  dataKey="rothBalance"
+                  stackId="portfolio"
+                  fill="#82ca9d"
+                  name="Roth Portion"
                 />
                 <Bar
-                  dataKey={(entry) => (entry.currentStrategy === "Roth" ? 1 : 0)}
-                  stackId="strategy"
-                  fill="#2e7d32"
-                  name="Roth"
+                  dataKey="traditionalAfterTax"
+                  stackId="portfolio"
+                  fill="#ffc658"
+                  name="Traditional Portion"
                 />
+
+                {/* ReferenceLines for switch points */}
+                {analysis.switchPoints.length > 0 &&
+                  analysis.switchPoints.map((point, index) => (
+                    <ReferenceLine
+                      key={index}
+                      x={point.age}
+                      stroke="red"
+                      strokeDasharray="4 4"
+                      label={{
+                        position: 'top',
+                        value: `Switch to ${point.switchTo}`,
+                        fill: 'red',
+                        fontSize: 12,
+                        fontWeight: 'bold',
+                      }}
+                    />
+                  ))}
               </BarChart>
             </ResponsiveContainer>
           </div>
+            {/* Detailed switch points info panel */}
           <div style={{ marginTop: "1rem" }}>
             <h4>Switch Points:</h4>
             {analysis.switchPoints.length > 0 ? (
               <div className="switch-points">
                 {analysis.switchPoints.map((point, index) => (
-                  <div key={index} className="switch-point-item">
+                  <div key={index} className="switch-point-item" style={{ marginBottom: '1rem', borderBottom: '1px solid #ddd', paddingBottom: '0.5rem' }}>
                     <div className="switch-point-info">
-                      <div className="switch-year">
+                      <div className="switch-year" style={{ fontWeight: 'bold' }}>
                         Age {point.age} ({point.year})
                       </div>
                       <div className="switch-strategy">
-                        Switch from {point.switchFrom} to {point.switchTo}
+                        Switch from <strong>{point.switchFrom}</strong> to <strong>{point.switchTo}</strong>
                       </div>
                       <div style={{ fontSize: "0.8rem", color: "#666" }}>{point.reason}</div>
                     </div>
-                    <div className="switch-values">
+                    <div className="switch-values" style={{ marginTop: '0.5rem', fontSize: '0.9rem' }}>
                       <div>Salary: ${point.salary.toLocaleString()}</div>
                       <div>Tax Rate: {point.taxRate}%</div>
                     </div>
@@ -852,6 +936,7 @@ function DataAnalysis() {
           </div>
         </fieldset>
       </div>
+
             
     </div>
   )
