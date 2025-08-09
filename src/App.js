@@ -2,29 +2,44 @@
 
 import { useState, useEffect } from "react"
 import "./App.css"
-import { BrowserRouter as Router, Routes, Route, Link, useLocation } from "react-router-dom"
+import { BrowserRouter as Router, Routes, Route, Link, useLocation, useNavigate } from "react-router-dom"
 import { Dashboard, ClientDetail, IRACalculator, DataAnalysis, EmployeeTable, FAQ } from './components'; // Update index if adding new components
 
 
 function Navigation({ currentUser, onLogout }) {
   const location = useLocation()
+  const navigate = useNavigate()
+
   const showNavTabs = location.pathname === "/calculators";
+
+  const isClientDetailPage = location.pathname.startsWith("/client/");
+  const isDashboardPage = location.pathname === "/";
+
+  const handleBackClick = () => {
+    navigate("/");
+  };
 
   return (
     
     <div className="app-header">
       <div className="header-content">
         <div className="header-left">
-          <h1 className="app-title">IRA Calculator Suite</h1>
+          <h1 className="app-title">Financial Copilot Suite</h1>
         </div>
         <div className="header-right">
+          {/* Show this button only on Client Detail page, not on Dashboard */}
+          {isClientDetailPage && !isDashboardPage && (
+            <button className="back-btn" onClick={handleBackClick}>
+              ← Back to Dashboard
+            </button>
+          )}
           <span className="user-welcome">Welcome, {currentUser}</span>
           <button className="logout-btn" onClick={onLogout}>
             Logout
           </button>
         </div>
       </div>
-      {/* ✅ Only show nav-tabs on the /calculators route */}
+      {/* Only show nav-tabs on the /calculators route */}
         {showNavTabs && (
           <nav className="nav-tabs">
             <Link to="/iraCalculator" className={`tab-link ${location.pathname === "/iraCalculator" ? "active" : ""}`}>

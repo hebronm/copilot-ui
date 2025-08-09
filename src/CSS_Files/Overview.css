@@ -1,0 +1,91 @@
+.overview-container {
+  padding: 20px;
+}
+
+.overview-top-stats {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.stat-box {
+  flex: 1;
+  background-color: #f0f0f0;
+  padding: 15px;
+  text-align: center;
+  border-radius: 8px;
+}
+
+.stat-box h3 {
+  margin-bottom: 10px;
+  font-size: 18px;
+  color: #333;
+}
+
+.stat-box p {
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.goal-box {
+  text-align: center;
+  background-color: #e8f4fc;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 30px;
+}
+
+.goal-box h3 {
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+.info-summary-section {
+  display: flex;
+  gap: 20px;
+}
+
+.info-box {
+  flex: 1;
+  background-color: #fdfdfd;
+  padding: 20px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+}
+
+.info-box h3 {
+  font-size: 32px;
+  margin-bottom: 15px;
+}
+
+.info-box ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.info-box li {
+  display: flex;
+  justify-content: space-between;
+  align-items:baseline;
+  padding: 3px 0;
+  /* border-bottom: 1px solid #eee; */
+}
+
+.label {
+  flex: 1;
+  font-weight: bold;
+  font-size: 20px;
+  text-align: left;
+  color: #868686;
+  max-width: 250px; /* optional: controls label width */
+}
+
+.value {
+  flex: 1;
+  font-weight: bold;;
+  font-size: 20px;
+  text-align: right;
+  color: #333;
+}

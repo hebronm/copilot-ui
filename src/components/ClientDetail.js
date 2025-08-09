@@ -2,16 +2,40 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import '../CSS_Files/ClientDetail.css';
 
+import Overview from './Overview'
+
 function ClientDetail() {
   const { id } = useParams();
 
   // Dummy client data (replace with backend fetch later)
   const dummyClient = {
     1: {
-      name: 'John Doe',
-      age: 45,
-      assets: '$500,000',
-      overview: 'John is a long-term investor with a diversified portfolio.',
+        name: 'John Doe',
+        age: 45,
+        assets: '$' + 500000,
+        overview: 'John is a long-term investor with a diversified portfolio.',
+        totalAssets: '$500,000',
+        annualIncome: '$120,000',
+        taxBracket: '24%',
+        targetRetirementAge: 65,
+        financialGoal: 'Retire comfortably by age 65 while maintaining current lifestyle.',
+        personalInfo: {
+            fullName: 'John Doe',
+            email: 'john.doe@example.com',
+            phone: '123-456-7890',
+            age: 45,
+            occupation: 'Software Engineer',
+            address: '123 Main Street, Anytown, USA',
+        },
+        financialSummary: {
+            netWorth: '$850,000',
+            annualSalaryGrowth: '3%',
+            rothIRA: '$150,000',
+            traditionalIRA: '$200,000',
+            monthlyContribution: '$1,000',
+            retirementIncomeGoal: '$80,000/year',
+        },
+      
     },
     2: {
       name: 'Jane Smith',
@@ -21,7 +45,14 @@ function ClientDetail() {
     },
   };
 
+  /* 
+  This is what it is supposed to be but using dummy 1 as ex for now
+  =================================================================
+
   const client = dummyClient[id];
+  */
+
+  const client = dummyClient[1];
 
   // Tab management
   const tabs = ['Overview', 'Calculators', 'Investments', 'Retirement'];
@@ -31,7 +62,7 @@ function ClientDetail() {
     // Later: Fetch client data from API using ID
   }, [id]);
 
-/* Do like some backend API call like this later on
+/* Do some backend API call like this later on
 useEffect(() => {
   fetch(`/api/clients/${id}`)
     .then(res => res.json())
@@ -65,14 +96,8 @@ useEffect(() => {
 
       {/* Tab Content */}
       <div className="tab-content">
-        {activeTab === 'Overview' && (
-          <div>
-            <h2>{client.name}</h2>
-            <p>Age: {client.age}</p>
-            <p>Total Assets: {client.assets}</p>
-            <p>{client.overview}</p>
-          </div>
-        )}
+        {activeTab === 'Overview' && <Overview client={client} />}
+        
         {activeTab !== 'Overview' && (
           <p>{activeTab} content goes here (placeholder)</p>
         )}

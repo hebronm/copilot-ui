@@ -139,6 +139,21 @@
   gap: 1rem;
 }
 
+.back-btn {
+  margin-right: 15px;
+  padding: 6px 12px;
+  background-color: #ddd;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.back-btn:hover {
+  background-color: #ccc;
+}
+
+
 .user-welcome {
   color: #666;
   font-size: 14px;
