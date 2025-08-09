@@ -1,6 +1,6 @@
 "use client"
 import { calculateNetSalary, calculateRelativeTaxPercentage } from './functions.js'
-import { useState, useMemo } from "react"
+import React, { useState, useMemo } from "react"
 import {
   LineChart,
   Line,
@@ -35,7 +35,7 @@ function getTaxRate(income) {
 }
 */
 
-const taxes2024 = [
+export const taxes2024 = [
   [11000, 10],   
   [44725, 12],  
   [95375, 22], 
@@ -72,6 +72,9 @@ function DataAnalysis() {
   const [simpleIncome, setSimpleIncome] = useState(75000)
   const [simpleContribution, setSimpleContribution] = useState(500)
   const [salaryGrowthRate, setSalaryGrowthRate] = useState(3)
+
+  // tax bracket ranges
+  const [myBracket, setMyBracket] = useState(taxes2024)
 
   // Calculate realistic retirement tax rate
   const retirementTaxRate = calculateRetirementTaxRate(
@@ -507,6 +510,51 @@ function DataAnalysis() {
             </p>
           </div>
         </fieldset>
+
+        {/* Tax Brackets Section */}
+        <div className="form-box">
+          <fieldset>
+            <h2 style={{ textAlign: "center" }}>Tax Brackets (2024)</h2>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "0.5rem" }}>
+              <label><b>Min</b></label>
+              <label><b>Max</b></label>
+              <label><b>Rate</b></label>
+
+              {myBracket.map((bracket, i) => (
+                <React.Fragment key={i}>
+                  <input
+                    type="number"
+                    value={bracket[0]}
+                    onChange={(e) => {
+                      const updated = [...myBracket];
+                      updated[i][0] = Number(e.target.value);
+                      setMyBracket(updated);
+                    }}
+                  />
+                  <input
+                    type="number"
+                    value={bracket[1]}
+                    onChange={(e) => {
+                      const updated = [...myBracket];
+                      updated[i][1] = Number(e.target.value);
+                      setMyBracket(updated);
+                    }}
+                  />
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={bracket[2]}
+                    onChange={(e) => {
+                      const updated = [...myBracket];
+                      updated[i][2] = Number(e.target.value);
+                      setMyBracket(updated);
+                    }}
+                  />
+                </React.Fragment>
+              ))}
+            </div>
+          </fieldset>
+        </div>
 
         {/* Retirement Income Planning */}
         <fieldset>
