@@ -23,24 +23,33 @@
 
 .client-nav {
   display: flex;
-  justify-content: center;
+  justify-content:space-evenly;
   margin-bottom: 20px;
-  gap: 20px;
-  border-bottom: 1px solid #ccc;
-  padding-bottom: 10px;
+  max-width: 100%;
+  width: 100%;
+  box-sizing: border-box;
+  background-color: #e8eaf6;
+  padding: 8px;
+  border-radius: 10px;
 }
 
 .nav-tab {
   background: none;
   border: none;
-  font-size: 16px;
+  font-size: 20px;
   cursor: pointer;
-  padding: 6px 12px;
+  flex: 1;
+  text-align: center;
+  transition: all 0.3s ease;
+  font-weight: bold;
+  color:#59618a;
+  border-radius: 10px;
+  flex-grow: 1;
 }
 
 .nav-tab.active {
-  font-weight: bold;
-  border-bottom: 2px solid #007bff;
+  background-color: #ffffff;
+  color: #1a237e;
 }
 
 .tab-content {
@@ -52,20 +61,32 @@
 
 .calculator-sub-nav {
   display: flex;
-  justify-content: center;
+  flex: 1;
+  justify-content: space-evenly;
   margin-bottom: 20px;
-  gap: 24px;
+  gap: 1px;
+  width: 50%;
+  margin: 0 auto;
+  background-color: #c3c9f0;
+  border-radius: 10px;
+  padding: 8px;
 }
 
 .sub-nav-tab {
-  font-size: 16px;
-  padding: 10px 20px;
-  border:1px #8b8b8b;
+  font-size: 20px;
+  border: none;
   cursor: pointer;
+  flex: 1; 
+  text-align: center; 
+  transition: all 0.01s ease;
+  font-weight: bold;
+  color:#384064;
+  border-radius: 10px;
+  background: none;
+  flex-grow: 1;
 }
 
 .sub-nav-tab.active {
-  font-weight: bold;
-  font-size: 18px;
-  border-bottom: 2px solid #007bff;
+  background-color: #ffffff;
+  color:#1a3094;
 }
