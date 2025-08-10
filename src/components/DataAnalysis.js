@@ -135,7 +135,7 @@ function DataAnalysis() {
     for (let year = 0; year <= yearsToRetirement; year++) {
       const currentAgeInYear = currentAge + year
       const { salary, contribution } = getSalaryData(year)
-      const taxRateThisYear = calculateRelativeTaxPercentage(taxes2024, salary)
+      const taxRateThisYear = calculateRelativeTaxPercentage(myBracket, salary)
       const monthlyContribution = contribution
 
       const taxDifference = taxRateThisYear - retirementTaxRate
@@ -514,47 +514,99 @@ function DataAnalysis() {
         {/* Tax Brackets Section */}
         <div className="form-box">
           <fieldset>
-            <h2 style={{ textAlign: "center" }}>Tax Brackets (2024)</h2>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "0.5rem" }}>
+            <h2 style={{ textAlign: "center" }}>Tax Brackets 2024 (Change for Custom)</h2>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 50px", gap: "0.5rem", alignItems: "center" }}>
               <label><b>Min</b></label>
               <label><b>Max</b></label>
               <label><b>Rate</b></label>
+              <div></div> {/* For delete button header */}
 
-              {myBracket.map((bracket, i) => (
-                <React.Fragment key={i}>
-                  <input
-                    type="number"
-                    value={bracket[0]}
-                    onChange={(e) => {
-                      const updated = [...myBracket];
-                      updated[i][0] = Number(e.target.value);
-                      setMyBracket(updated);
-                    }}
-                  />
-                  <input
-                    type="number"
-                    value={bracket[1]}
-                    onChange={(e) => {
-                      const updated = [...myBracket];
-                      updated[i][1] = Number(e.target.value);
-                      setMyBracket(updated);
-                    }}
-                  />
-                  <input
-                    type="number"
-                    step="0.01"
-                    value={bracket[2]}
-                    onChange={(e) => {
-                      const updated = [...myBracket];
-                      updated[i][2] = Number(e.target.value);
-                      setMyBracket(updated);
-                    }}
-                  />
-                </React.Fragment>
-              ))}
+              {myBracket.map((bracket, i) => {
+                const min = i === 0 ? 0 : myBracket[i - 1][0] + 1;
+                const max = bracket[0];
+                const rate = bracket[1];
+                const isLast = i === myBracket.length - 1;
+
+                return (
+                  <React.Fragment key={i}>
+                    {/* Min (readonly, calculated) */}
+                    <input
+                      type="number"
+                      value={min}
+                      readOnly
+                    />
+
+                     {/* Max: editable except last one */}
+                    {isLast ? (
+                      <input
+                        type="text"
+                        value="∞"
+                        readOnly
+                        style={{ textAlign: "center" }}
+                        title="Last bracket max is infinite"
+                      />
+                    ) : (
+                      <input
+                        type="number"
+                        value={max}
+                        onChange={(e) => {
+                          const updated = [...myBracket];
+                          updated[i][0] = Number(e.target.value);
+                          setMyBracket(updated);
+                        }}
+                      />
+                    )}
+
+                    {/* Rate (editable) */}
+                    <input
+                      type="number"
+                      step="0.01"
+                      value={rate}
+                      onChange={(e) => {
+                        const updated = [...myBracket];
+                        updated[i][1] = Number(e.target.value);
+                        setMyBracket(updated);
+                      }}
+                    />
+
+                    {/* Delete row button */}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (myBracket.length > 1) {
+                          const updated = myBracket.filter((_, index) => index !== i);
+                          setMyBracket(updated);
+                        }
+                      }}
+                      style={{ cursor: myBracket.length > 1 ? "pointer" : "not-allowed" }}
+                      disabled={myBracket.length <= 1}
+                      title={myBracket.length <= 1 ? "Must have at least one bracket" : "Delete bracket"}
+                    >
+                      &times;
+                    </button>
+                  </React.Fragment>
+                );
+              })}
+
+              {/* Add new bracket button spanning all columns */}
+              <button
+                type="button"
+                style={{ gridColumn: "span 4", marginTop: "1rem" }}
+                onClick={() => {
+                  // Add new bracket with default values:
+                  // min will auto-calc based on last bracket max + 1
+                  const lastMax = myBracket.length ? myBracket[myBracket.length - 1][0] : 0;
+                  const newBracket = [lastMax + 1, 0.10]; // max = last max + 1, rate default 10%
+                  setMyBracket([...myBracket, newBracket]);
+                }}
+              >
+                + Add New Bracket
+              </button>
             </div>
           </fieldset>
         </div>
+
+
 
         {/* Retirement Income Planning */}
         <fieldset>
@@ -655,7 +707,7 @@ function DataAnalysis() {
                 className="custom-slider"
                 style={getSliderTrackStyle(simpleIncome, 30000, 200000)}
               />
-              <small>Current tax bracket: {calculateRelativeTaxPercentage(taxes2024, simpleIncome)}%</small>
+              <small>Current tax bracket: {calculateRelativeTaxPercentage(myBracket, simpleIncome)}%</small>
 
               <label className="label">
                 Monthly IRA Contribution: <b>${simpleContribution.toLocaleString()}</b>
@@ -717,7 +769,7 @@ function DataAnalysis() {
                           style={{ width: "80px", padding: "2px" }}
                         />
                       </td>
-                      <td>{calculateRelativeTaxPercentage(taxes2024, yearData.salary)}%</td>
+                      <td>{calculateRelativeTaxPercentage(myBracket, yearData.salary)}%</td>
                     </tr>
                   ))}
                 </tbody>
