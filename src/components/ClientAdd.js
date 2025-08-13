@@ -102,51 +102,224 @@ const ClientAdd = () => {
   };
 
 
-  const renderPersonalForm = () => (
-    <>
-      {['firstName', 'lastName', 'age', 'birthdate', 'email', 'phoneNumber', 'occupation', 'address'].map(field => (
-        <input
-          key={field}
-          type={field === 'birthdate' ? 'date' : 'text'}
-          placeholder={field.replace(/([A-Z])/g, ' $1')}
-          value={formData.personal[field]}
-          onChange={e => handleChange('personal', field, e.target.value)}
-        />
-      ))}
-    </>
-  );
+    const renderPersonalForm = () => (
+        <div className="form-grid">
+            <div className="form-group">
+                <label className='form-label'>First Name</label>
+                <input
+                    type="text"
+                    className='form-input'
+                    value={formData.personal.firstName}
+                    onChange={(e) => handleChange('personal', 'firstName', e.target.value)}
+                />
+            </div>
 
-  const renderFinancialForm = () => (
-    <>
-      {['annualIncome', 'monthlyContribution', 'annualSalaryGrowth', 'totalSavings', 'totalDebt', 'financialGoal'].map(field => (
-        <input
-          key={field}
-          type="text" //allows support for like "100" & "999,999"
-          placeholder={field.replace(/([A-Z])/g, ' $1')}
-          value={formData.financial[field]}
-          onChange={e => handleChange('financial', field, e.target.value)}
-        />
-      ))}
-    </>
-  );
+            <div className="form-group">
+                <label className='form-label'>Last Name</label>
+                <input
+                    type="text"
+                    className='form-input'
+                    value={formData.personal.lastName}
+                    onChange={(e) => handleChange('personal', 'lastName', e.target.value)}
+                />
+            </div>
 
-  const renderRetirementForm = () => (
-    <>
-      {['targetAge', 'desiredIncome', 'rothBalance', 'traditionalBalance'].map(field => (
-        <input
-          key={field}
-          type="number"
-          placeholder={field.replace(/([A-Z])/g, ' $1')}
-          value={formData.retirement[field]}
-          onChange={e => handleChange('retirement', field, e.target.value)}
-        />
-      ))}
-    </>
-  );
+            <div className="form-group">
+                <label className='form-label'>Email</label>
+                <input
+                    type="email"
+                    className='form-input'
+                    value={formData.personal.email}
+                    onChange={(e) => handleChange('personal', 'email', e.target.value)}
+                />
+            </div>
 
-  const renderInvestmentForm = () => (
-    <p>This is a placeholder for future updates. We will keep you updated!</p>
-  );
+            <div className="form-group">
+                <label className='form-label'>Phone Number</label>
+                <input
+                    type="tel"
+                    className='form-input'
+                    value={formData.personal.phoneNumber}
+                    onChange={(e) =>
+                    handleChange('personal', 'phoneNumber', e.target.value)
+                    }
+                />
+            </div>
+
+            <div className="form-group">
+                <label className='form-label'>Birthdate</label>
+                <input
+                    type="date"
+                    className='form-input'
+                    value={formData.personal.birthdate}
+                    onChange={(e) => handleChange('personal', 'birthdate', e.target.value)}
+                />
+            </div>
+
+            <div className="form-group">
+                <label className='form-label'>Occupation</label>
+                <input
+                    type="text"
+                    className='form-input'
+                    value={formData.personal.occupation}
+                    onChange={(e) =>
+                    handleChange('personal', 'occupation', e.target.value)
+                    }
+                />
+            </div>
+
+            {/*Full-width address field */}
+            <div className="form-group full-width">
+                <label className='form-label'>Address</label>
+                <input
+                    type="text"
+                    className='form-input'
+                    value={formData.personal.address}
+                    onChange={(e) => handleChange('personal', 'address', e.target.value)}
+                />
+            </div>
+        </div>
+    );
+
+    const renderFinancialForm = () => (
+        <div className="form-grid">
+            <div className="form-group">
+            <label className='form-label'>Annual Income</label>
+            <input
+                type="text"
+                className='form-input'
+                value={formData.financial.annualIncome}
+                onChange={(e) =>
+                handleChange('financial', 'annualIncome', e.target.value)
+                }
+            />
+            </div>
+
+            <div className="form-group">
+            <label className='form-label'>Monthly Contribution</label>
+            <input
+                type="text"
+                className='form-input'
+                value={formData.financial.monthlyContribution}
+                onChange={(e) =>
+                handleChange('financial', 'monthlyContribution', e.target.value)
+                }
+            />
+            </div>
+
+            <div className="form-group">
+            <label className='form-label'>Annual Salary Growth</label>
+            <input
+                type="text"
+                className='form-input'
+                value={formData.financial.annualSalaryGrowth}
+                onChange={(e) =>
+                handleChange('financial', 'annualSalaryGrowth', e.target.value)
+                }
+            />
+            </div>
+
+            <div className='form-group'>
+                <div className="inline-double">
+                    <div className='half-field'>
+                        <label className='form-label'>Total Savings</label>
+                        <input
+                            type="text"
+                            className='form-input'
+                            value={formData.financial.totalSavings}
+                            onChange={(e) =>
+                            handleChange('financial', 'totalSavings', e.target.value)
+                            }
+                        />
+                    </div>
+
+                    <div className='half-field'>
+                        <label className='form-label'>Total Debt</label>
+                        <input
+                            type="text"
+                            className='form-input'
+                            value={formData.financial.totalDebt}
+                            onChange={(e) =>
+                            handleChange('financial', 'totalDebt', e.target.value)
+                            }
+                        />
+                    </div>
+                </div>
+            </div>
+
+            <div className="form-group full-width">
+                <label className='form-label'> Financial Goals</label>
+                <input
+                    type="text"
+                    className='form-input'
+                    value={formData.financial.financialGoal}
+                    onChange={(e) =>
+                    handleChange('financial', 'financialGoal', e.target.value)
+                    }
+                />
+            </div>
+        </div>
+    );
+
+
+    const renderRetirementForm = () => (
+        <div className="form-grid">
+            <div className="form-group">
+            <label className='form-label'>Target Retirement Age</label>
+            <input
+                type="text"
+                className='form-input'
+                value={formData.retirement.targetAge}
+                onChange={(e) =>
+                handleChange('retirement', 'targetAge', e.target.value)
+                }
+            />
+            </div>
+
+            <div className="form-group">
+            <label className='form-label'>Desired Annual Retirement Income</label>
+            <input
+                type="text"
+                className='form-input'
+                value={formData.retirement.desiredIncome}
+                onChange={(e) =>
+                handleChange('retirement', 'desiredIncome', e.target.value)
+                }
+            />
+            </div>
+
+            <div className="form-group">
+            <label className='form-label'>Roth IRA Balance</label>
+            <input
+                type="text"
+                className='form-input'
+                value={formData.retirement.rothBalance}
+                onChange={(e) =>
+                handleChange('retirement', 'rothBalance', e.target.value)
+                }
+            />
+            </div>
+
+            <div className="form-group">
+            <label className='form-label'>Traditional IRA Balance</label>
+            <input
+                type="text"
+                className='form-input'
+                value={formData.retirement.traditionalBalance}
+                onChange={(e) =>
+                handleChange('retirement', 'traditionalBalance', e.target.value)
+                }
+            />
+            </div>
+        </div>
+    );
+
+
+
+
+    const renderInvestmentForm = () => (
+        <p>This is a placeholder for future updates. We will keep you updated!</p>
+    );
 
   const renderForm = () => {
     switch (activeTab) {
@@ -170,31 +343,37 @@ const ClientAdd = () => {
         <p>Detailing client information for better optimization</p>
       </header>
 
-      <nav className="tab-nav">
-        {TABS.map(tab => (
-          <button
+      <div className="form-wrapper">
+      {/* Tabs */}
+      <nav className="client-add-nav">
+        {TABS.map((tab) => (
+            <button
             key={tab}
-            className={activeTab === tab ? 'active' : ''}
+            className={`client-add-tab ${activeTab === tab ? 'active' : ''}`}
             onClick={() => setActiveTab(tab)}
-          >
+            >
             {tab}
-          </button>
+            </button>
         ))}
       </nav>
 
+      {/* Form section */}
       <div className="form-section">
         {renderForm()}
       </div>
 
+      {/* Action buttons */}
       <div className="form-actions">
         <button className="cancel-button" onClick={() => navigate('/')}>
-            Cancel
+          Cancel
         </button>
-
-        <button className="save-button" onClick={handleSave}>Save Client</button>
+        <button className="save-button" onClick={handleSave}>
+          Save Client
+        </button>
       </div>
     </div>
-  );
+  </div>
+);
 };
 
 export default ClientAdd;
