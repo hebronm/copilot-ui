@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import "./CSS_Files/App.css"
 import { BrowserRouter as Router, Routes, Route, Link, useLocation, useNavigate } from "react-router-dom"
-import { Dashboard, ClientDetail, IRACalculator, DataAnalysis, EmployeeTable, FAQ } from './components'; // Update index if adding new components
+import { Dashboard, ClientDetail, ClientAdd, ClientTable, IRACalculator, DataAnalysis, EmployeeTable, FAQ } from './components'; // Update index if adding new components
 
 
 function Navigation({ currentUser, onLogout }) {
@@ -27,6 +27,14 @@ function Navigation({ currentUser, onLogout }) {
           <h1 className="app-title">Financial Copilot Suite</h1>
         </div>
         <div className="header-right">
+          <button
+            className="debug-btn"
+            onClick={() => navigate("/clientTable")}
+            style={{ marginRight: "10px", backgroundColor: "#f39c12", color: "#fff" }}
+          >
+            DEBUG
+          </button>
+          
           {/* Show this button only on Client Detail page, not on Dashboard */}
           {isClientDetailPage && !isDashboardPage && (
             <button className="back-btn" onClick={handleBackClick}>
@@ -148,9 +156,11 @@ function App() {
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/client/:id" element={<ClientDetail />} />
+            <Route path="/newClient" element={<ClientAdd />} />
             <Route path="/iraCalculator" element={<IRACalculator />} /> 
             <Route path="/analysis" element={<DataAnalysis />} />
             <Route path="/table" element={<EmployeeTable />} />
+            <Route path="/clientTable" element={<ClientTable />} />
             <Route path="/FAQ" element={<FAQ />} />
           </Routes>
         </div>
