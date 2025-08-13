@@ -8,7 +8,9 @@ import DataAnalysis from './DataAnalysis'
 
 function ClientDetail() {
   const { id } = useParams();
+  const [client, setClient] = useState(null);
 
+  /*
   // Dummy client data (replace with backend fetch later)
   const dummyClient = {
     1: {
@@ -45,16 +47,8 @@ function ClientDetail() {
       assets: '$750,000',
       overview: 'Jane focuses on sustainable and ESG investing strategies.',
     },
-  };
+  };*/
 
-  /* 
-  This is what it is supposed to be but using dummy 1 as ex for now
-  =================================================================
-
-  const client = dummyClient[id];
-  */
-
-  const client = dummyClient[1];
 
   // Tab management
   const tabs = ['Overview', 'Calculators', 'Investments', 'Retirement'];
@@ -62,16 +56,18 @@ function ClientDetail() {
   const [activeCalculatorTab, setActiveCalculatorTab] = useState('Simple'); // Track sub-tabs for Calculators
 
   useEffect(() => {
-    // Later: Fetch client data from API using ID
+    fetch(`http://34.217.130.235:8080/clients/${id}`)
+      .then(res => {
+        if (!res.ok) throw new Error(`Error: ${res.status}`);
+        return res.json();
+      })
+      .then(data => setClient(data))
+      .catch(err => console.error("Error fetching client data:", err));
   }, [id]);
 
-/* Do some backend API call like this later on
-useEffect(() => {
-  fetch(`/api/clients/${id}`)
-    .then(res => res.json())
-    .then(data => setClient(data));
-}, [id]);
- */
+  if (!client) {
+    return <p>Loading client details...</p>;
+  }
 
 
   return (
