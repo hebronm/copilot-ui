@@ -19,8 +19,8 @@ const ClientAdd = () => {
       address: '',
     },
     financial: {
-      annualIncome: '',
-      monthlyContribution: '',
+      annualIncome: '', //for "optimal analysis", need to implement comma seperated array input
+      monthlyContribution: '', //as above
       annualSalaryGrowth: '',
       totalSavings: '',
       totalDebt: '',
@@ -44,11 +44,63 @@ const ClientAdd = () => {
     }));
   };
 
-  const handleSave = () => {
-    // TODO: Replace with your actual backend call
-    console.log('Submitting client data:', formData);
-    alert('Client data saved (mocked)');
+  //Parses input like "100,200,300" into [100, 200, 300]
+  const parseInputArray = (input) => {
+    return input
+      .toString()
+      .split(',')
+      .map(item => parseFloat(item.trim()))
+      .filter(item => !isNaN(item));
   };
+
+  
+  const handleSave = () => {
+    //Construct the object to POST
+    const finalClientData = {
+      firstName: formData.personal.firstName,
+      lastName: formData.personal.lastName,
+      age: parseInt(formData.personal.age),
+      birthdate: formData.personal.birthdate,
+      email: formData.personal.email,
+      phoneNumber: formData.personal.phoneNumber,
+      address: formData.personal.address,
+      occupation: formData.personal.occupation,
+      annualIncome: parseInputArray(formData.financial.annualIncome), // 🔧 Array
+      monthlyContribution: parseInputArray(formData.financial.monthlyContribution), // 🔧 Array
+      annualSalaryGrowth: parseFloat(formData.financial.annualSalaryGrowth),
+      totalSavings: parseFloat(formData.financial.totalSavings),
+      totalDebt: parseFloat(formData.financial.totalDebt),
+      financialGoals: formData.financial.financialGoal,
+      targetRetirementAge: parseInt(formData.retirement.targetAge),
+      desiredAnnualRetirementIncome: parseFloat(formData.retirement.desiredIncome),
+      rothIRABalance: parseFloat(formData.retirement.rothBalance),
+      traditionalIRABalance: parseFloat(formData.retirement.traditionalBalance),
+      advisor: null //for now always null
+    };
+
+    console.log("Submitting client data:", finalClientData);
+
+    fetch('http://34.217.130.235:8080/clients', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(finalClientData)
+    })
+    .then(res => {
+      if (!res.ok) throw new Error(`Error: ${res.status}`);
+      return res.json();
+    })
+    .then(data => {
+      alert("Client successfully added!");
+      navigate('/');
+    })
+    .catch(err => {
+      console.error("Error submitting client:", err);
+      alert("Failed to save client. Check console for details.");
+    });
+  };
+
 
   const renderPersonalForm = () => (
     <>
@@ -69,7 +121,7 @@ const ClientAdd = () => {
       {['annualIncome', 'monthlyContribution', 'annualSalaryGrowth', 'totalSavings', 'totalDebt', 'financialGoal'].map(field => (
         <input
           key={field}
-          type="number"
+          type="text" //allows support for like "100" & "999,999"
           placeholder={field.replace(/([A-Z])/g, ' $1')}
           value={formData.financial[field]}
           onChange={e => handleChange('financial', field, e.target.value)}
