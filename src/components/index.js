@@ -5,7 +5,7 @@ export { default as IRACalculator } from './IRACalculator'
 export { default as DataAnalysis } from './DataAnalysis'
 export { default as EmployeeTable } from './EmployeeTable'
 export { default as FAQ } from './FAQ'
-export {default as Overview } from './Overview'
+export { default as Overview } from './Overview'
 export { default as ClientAdd } from './ClientAdd'
 export { default as ClientTable } from './ClientTable'
 
