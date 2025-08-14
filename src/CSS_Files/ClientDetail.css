@@ -8,17 +8,18 @@
   flex-direction: column;
   align-items: flex-start;
   margin-bottom: 20px;
+  font-size: 24px;
 }
 
 .client-header h1 {
-  margin: 0;
-  font-size: 28px;
+  margin-top: 10px;
+  margin-bottom: 0;
 }
 
 .client-header p {
   margin-top: 10px;
-  font-size: 16px;
-  color: #555;
+  font-size: 30px;
+  color: rgb(134, 134, 134);
 }
 
 .client-nav {
@@ -29,14 +30,16 @@
   width: 100%;
   box-sizing: border-box;
   background-color: #e8eaf6;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e4e2e2;
   padding: 8px;
   border-radius: 10px;
-  gap: 10px;
+  gap: 30px;
 }
 
 .nav-tab {
   background: none;
-  border: none;
+  border: 1px solid #e8eaf6;
   font-size: 20px;
   cursor: pointer;
   flex: 1;
@@ -46,16 +49,20 @@
   color:#59618a;
   border-radius: 5px;
   flex-grow: 1;
-  padding: 5px;
+  padding: 10px;
 }
 
 .nav-tab:hover {
   color: #374151;
   background-color: #d6daee;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #c5cae0;
 }
 
 .nav-tab.active {
   background-color: #ffffff;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #ddd;
   color: #1a237e;
 }
 
@@ -71,17 +78,19 @@
   flex: 1;
   justify-content: space-evenly;
   margin-bottom: 20px;
-  gap: 10px;
+  gap: 30px;
   width: 50%;
   margin: 0 auto;
   background-color: #c3c9f0;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e4e2e2;
   border-radius: 10px;
   padding: 8px;
 }
 
 .sub-nav-tab {
   font-size: 20px;
-  border: none;
+  border: 1px solid #c3c9f0;
   cursor: pointer;
   flex: 1; 
   text-align: center; 
@@ -91,15 +100,19 @@
   border-radius: 5px;
   background: none;
   flex-grow: 1;
-  padding: 5px;
+  padding: 8px;
 }
 
 .sub-nav-tab:hover {
   color: #2a3568;
   background-color: #9ea4c7;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
+  border: 1px solid #999fc4;
 }
 
 .sub-nav-tab.active {
   background-color: #ffffff;
   color:#1a3094;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
+  border: 1px solid #ddd;
 }

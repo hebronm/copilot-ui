@@ -34,6 +34,8 @@
   margin: 0 10px;
   height: 100px;
   background-color: #f0f0f0;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #ddd;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -55,13 +57,28 @@
   margin-bottom: 15px;
 }
 
+.clients-header h2 {
+  font-size: 30px;
+}
+
 .add-client-btn {
-  background-color: #007bff;
-  color: #fff;
-  border: none;
-  padding: 8px 14px;
-  border-radius: 4px;
+  background-color: #fff;
+  color: #000000;
+  border: 1px solid #ddd;
+  padding: 8px 18px;
+  border-radius: 5px;
   cursor: pointer;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.add-client-btn:hover {
+  background-color: #89bdf5;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+}
+
+.add-client-btn:active {
+  background-color: #61a7f1;
 }
 
 .clients-table {
@@ -73,29 +90,64 @@
 
 .clients-table th,
 .clients-table td {
-  border: 1px solid #ddd;
-  padding: 10px;
+  border-top: 1px solid #ddd;
+  padding: 20px 10px;
   text-align: center;
+}
+
+/*vertical border only to first & last columns*/
+.clients-table th:first-child,
+.clients-table td:first-child {
+  border-left: 1px solid #ddd;
+}
+
+.clients-table th:last-child,
+.clients-table td:last-child {
+  border-right: 1px solid #ddd;
+}
+
+/*to make bottom border show for last row*/
+.clients-table tr:last-child td {
+  border-bottom: 1px solid #ddd;
 }
 
 .clients-table th {
   background-color: #f4f4f4;
+  color: #696969;
 }
 
-.view-btn {
+.table-btn-group {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.view-btn, .delete-btn {
+  color: black;
+  border: 1px solid #ddd;
+  background-color: #f5f5f5;
+  padding: 6px 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.view-btn:hover {
   background-color: #28a745;
-  color: white;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 4px;
-  cursor: pointer;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.25);
 }
 
-.delete-btn {
-  background-color: #cf1919;
-  color: white;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 4px;
-  cursor: pointer;
+.view-btn:active {
+  background-color: #38cf5b;
+}
+
+
+.delete-btn:hover {
+  background-color: #e02b2b;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.25);
+}
+
+.delete-btn:active {
+  background-color: #b61515;
 }

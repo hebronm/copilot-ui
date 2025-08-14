@@ -8,6 +8,7 @@
 header {
   text-align: left;
   margin-bottom: 20px;
+  font-size: 24px;
 }
 
 header h1 {
@@ -15,8 +16,10 @@ header h1 {
 }
 
 header p {
-  color: gray;
-  margin-top: 5px;
+  margin-top: 10px;
+  font-size: 26px;
+  color: rgb(134, 134, 134);
+  
 }
 
 /* Encapsulated form box */
@@ -38,6 +41,8 @@ header p {
   display: flex;
   justify-content: space-evenly;
   background-color: #c3c9f0;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #ddd;
   border-radius: 10px;
   padding: 8px;
   width: 60%;
@@ -47,7 +52,7 @@ header p {
 
 .client-add-tab {
   font-size: 20px;
-  border: none;
+  border: 1px solid #c3c9f0;
   cursor: pointer;
   flex: 1;
   text-align: center;
@@ -62,9 +67,13 @@ header p {
 .client-add-tab:hover {
   color: #374151;
   background-color: #d6daee;
+  border: 1px solid #bbc2f1;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
 }
 
 .client-add-tab.active {
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #ddd;
   background-color: #ffffff;
   color: #1a3094;
 }
@@ -161,6 +170,8 @@ header p {
 .cancel-button,
 .save-button {
   background: #999999;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
+  border: 1px solid #ddd;
   color: white;
   padding: 10px 20px;
   border: none;

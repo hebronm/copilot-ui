@@ -75,9 +75,6 @@ function Dashboard() {
       <div className="clients-section">
         <div className="clients-header">
           <h2>Clients</h2>
-
-          {/* Need to implement this button function later*/}
-
           <button className="add-client-btn" onClick={handleAddClientClick}>
             Add Client
           </button>
@@ -123,12 +120,14 @@ function Dashboard() {
                     <td>{age}</td>
                     <td>${totalAssets.toLocaleString()}</td> {/* 🔧 Format number */}
                     <td>
-                      <button className="view-btn" onClick={() => handleViewClick(client.id)}>
-                        View
-                      </button>
-                      <button className="delete-btn" onClick={() => handleDeleteClick(client.id)}>
-                        Delete
-                      </button>
+                      <div className="table-btn-group">
+                        <button className="view-btn" onClick={() => handleViewClick(client.id)}>
+                          View
+                        </button>
+                        <button className="delete-btn" onClick={() => handleDeleteClick(client.id)}>
+                          Delete
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 );
