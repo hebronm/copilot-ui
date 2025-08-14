@@ -42,6 +42,7 @@ header p {
   padding: 8px;
   width: 60%;
   margin: 0 auto 20px auto;
+  gap: 10px;
 }
 
 .client-add-tab {
@@ -53,7 +54,7 @@ header p {
   transition: all 0.3s ease;
   font-weight: bold;
   color: #384064;
-  border-radius: 10px;
+  border-radius: 5px;
   background: none;
 }
 
@@ -72,7 +73,7 @@ header p {
 .form-grid {
   display: flex;
   flex-wrap: wrap;
-  gap: 20px;
+  gap: 40px;
   justify-content: center;
   max-width: 1000px;
   margin: 0 auto;
@@ -82,32 +83,25 @@ header p {
 .form-group {
   display: flex;
   flex-direction: column;
-  flex: 0 1 calc(50% - 10px);
+  flex: 0 1 calc(50% - 20px); /*its minus 1/2 the gap of form-grid*/
   min-width: 40%;
   max-width: 50%;
   box-sizing: border-box;
+  margin-top: 5px;
 }
 
-/*full-width fields */
-.form-group.full-width {
-  width: calc(10% - 10px);
-  max-width: 100%;
-  flex: 0 0 100%;
-  margin: 20px auto 0 auto;
-  display: block;
-}
-.form-group.full-width label {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-  margin: 20px auto 0 auto;
+.form-input {
+  padding: 10px;
+  font-size: 20px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
 }
 
 /* Total Savings + Debt in single field line */
 .inline-double {
   display: flex;
-  gap: 20px;
+  gap: 30px;
   flex: 1 1 100%;
   box-sizing: border-box;
 }
@@ -117,34 +111,44 @@ header p {
   display: flex;
   flex-direction: column;
   max-width: 50%;
-  margin-top: 7.5px;
 }
 
 .form-group .form-label {
   font-weight: bold;
+  font-size: 18px;
   margin-bottom: 5px;
 }
 
-.form-group.full-width .form-label {
-  font-weight: bold;
-  font-size: 16px;
-  margin-top: 0;
-  margin-bottom: 6px;
-  text-align: center;
+/*full-width fields */
+.full-width {
+  max-width: 100%;
+  flex: 0 0 100%;
+  display: block;
 }
 
+.full-width .form-label {
+  font-weight: bold;
+  text-align: center;
+  font-size: 18px;
+}
 
-input {
+.full-width .form-input {
+  margin-top: 9px;
+}
+
+.textarea-resizable {
+  width: 100%;
   padding: 10px;
-  font-size: 20px;
-  /*Needed inorder to bypass MUI stock styling*/
+  font-size: 16px;
   border-radius: 5px;
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
   border: 1px solid #ccc;
   box-sizing: border-box;
+  min-height: 80px;   
+  max-height: 120px;
+  resize: vertical;
+  overflow: auto;
 }
+
 
 .form-actions {
   margin-top: 30px;
@@ -165,4 +169,21 @@ input {
 
 .save-button {
   background: #28a745;
+}
+
+.input-with-prefix {
+  position: relative;
+}
+
+.input-with-prefix .dollarSign-prefix {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-weight: bold;
+  color: #333;
+}
+
+.input-with-prefix .form-input {
+  padding-left: 25px; /* space for the $ symbol */
 }

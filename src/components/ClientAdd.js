@@ -44,6 +44,18 @@ const ClientAdd = () => {
     }));
   };
 
+  const validateFields = () => {
+    //Flatten all values from both personal & finance sections
+    const allValues = [
+        ...Object.values(formData.personal),
+        ...Object.values(formData.financial),
+        ...Object.values(formData.retirement),
+    ];
+
+    //if any value empty or just whitespace, return false
+    return allValues.every(value => value.trim() !== '');
+  };
+
   //Parses input like "100,200,300" into [100, 200, 300]
   const parseInputArray = (input) => {
     return input
@@ -53,8 +65,54 @@ const ClientAdd = () => {
       .filter(item => !isNaN(item));
   };
 
+  const [inputErrors, setInputErrors] = useState({
+    annualIncome: '',
+    monthlyContribution: ''
+  });
+
+  //For Phone number formatting as (123) 456-7890
+  const formatPhoneNumber = (value) => {
+    if (!value) return '';
+    const digits = value.replace(/\D/g, '').substring(0, 10); //limit 10 nums
+    const len = digits.length;
+
+    if (len < 4) return `(${digits}`;
+    if (len < 7) return `(${digits.slice(0, 3)}) ${digits.slice(3)}`;
+    return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
+  };
+
   
   const handleSave = () => {
+    
+    //validation check before saving
+    if (!validateFields()) {
+      alert("Could not save client! There are empty fields.");
+      return;
+    }
+
+    console.log("Client data fields pass empty validation: ", formData);
+
+    //Check for annual income and monthly contribution
+    /**
+     * basically, at start of string,
+     * first number (\d+ optionally followed by .\d+)
+     * then optionally any # of comma-seperated nums w/ the same pattern
+     * */
+    const validPattern = /^(?:\d+(\.\d+)?)(?:,(?:\d+(\.\d+)?))*$/;
+
+    let errors = {};
+    if (!validPattern.test(formData.financial.annualIncome)) {
+      errors.annualIncome = 'Format invalid: ensure no trailing commas or decimals';
+    }
+    if (!validPattern.test(formData.financial.monthlyContribution)) {
+      errors.monthlyContribution = 'Format invalid: ensure no trailing commas or decimals';
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setInputErrors(errors);
+      return;
+    }
+
     //Construct the object to POST
     const finalClientData = {
       firstName: formData.personal.firstName,
@@ -77,6 +135,8 @@ const ClientAdd = () => {
       traditionalIRABalance: parseFloat(formData.retirement.traditionalBalance),
       advisor: null //for now always null
     };
+
+    
 
     console.log("Submitting client data:", finalClientData);
 
@@ -111,6 +171,7 @@ const ClientAdd = () => {
                     className='form-input'
                     value={formData.personal.firstName}
                     onChange={(e) => handleChange('personal', 'firstName', e.target.value)}
+                    placeholder='John'
                 />
             </div>
 
@@ -121,6 +182,7 @@ const ClientAdd = () => {
                     className='form-input'
                     value={formData.personal.lastName}
                     onChange={(e) => handleChange('personal', 'lastName', e.target.value)}
+                    placeholder='Doe'
                 />
             </div>
 
@@ -131,6 +193,7 @@ const ClientAdd = () => {
                     className='form-input'
                     value={formData.personal.email}
                     onChange={(e) => handleChange('personal', 'email', e.target.value)}
+                    placeholder='JohnDoe123@mail.com'
                 />
             </div>
 
@@ -139,10 +202,13 @@ const ClientAdd = () => {
                 <input
                     type="tel"
                     className='form-input'
-                    value={formData.personal.phoneNumber}
-                    onChange={(e) =>
-                    handleChange('personal', 'phoneNumber', e.target.value)
-                    }
+                    value={formatPhoneNumber(formData.personal.phoneNumber)}
+                    onChange={(e) => {
+                      //keep only digits in submit state
+                      const numericValue = e.target.value.replace(/\D/g, '');
+                      handleChange('personal', 'phoneNumber', numericValue);
+                    }}
+                    placeholder='(123) 456-7890'
                 />
             </div>
 
@@ -163,19 +229,21 @@ const ClientAdd = () => {
                     className='form-input'
                     value={formData.personal.occupation}
                     onChange={(e) =>
-                    handleChange('personal', 'occupation', e.target.value)
-                    }
+                    handleChange('personal', 'occupation', e.target.value)}
+                    placeholder='Accountant'
                 />
             </div>
 
             {/*Full-width address field */}
-            <div className="form-group full-width">
+            <div className="full-width">
                 <label className='form-label'>Address</label>
                 <input
                     type="text"
                     className='form-input'
                     value={formData.personal.address}
                     onChange={(e) => handleChange('personal', 'address', e.target.value)}
+                    maxLength={80}
+                    placeholder='123 Main St, Los Angeles, CA 12345'
                 />
             </div>
         </div>
@@ -189,10 +257,14 @@ const ClientAdd = () => {
                 type="text"
                 className='form-input'
                 value={formData.financial.annualIncome}
-                onChange={(e) =>
-                handleChange('financial', 'annualIncome', e.target.value)
-                }
+                onChange={(e) => {
+                  //allow only nums, commas, and decimals
+                  const filteredValue = e.target.value.replace(/[^0-9.,]/g, '');
+                  handleChange('financial', 'annualIncome', filteredValue);
+                }}
+                placeholder='One value or comma-seperated values'
             />
+            {inputErrors.annualIncome && <small style={{color:'red'}}>{inputErrors.annualIncome}</small>}
             </div>
 
             <div className="form-group">
@@ -201,10 +273,13 @@ const ClientAdd = () => {
                 type="text"
                 className='form-input'
                 value={formData.financial.monthlyContribution}
-                onChange={(e) =>
-                handleChange('financial', 'monthlyContribution', e.target.value)
-                }
+                onChange={(e) => {
+                  const filteredValue = e.target.value.replace(/[^0-9.,]/g, '');
+                  handleChange('financial', 'monthlyContribution', filteredValue);
+                }}
+                placeholder='One value or comma-seperated values'
             />
+            {inputErrors.monthlyContribution && <small style={{color:'red'}}>{inputErrors.monthlyContribution}</small>}
             </div>
 
             <div className="form-group">
@@ -213,50 +288,80 @@ const ClientAdd = () => {
                 type="text"
                 className='form-input'
                 value={formData.financial.annualSalaryGrowth}
-                onChange={(e) =>
-                handleChange('financial', 'annualSalaryGrowth', e.target.value)
-                }
+                onChange={(e) => {
+                  let val = e.target.value;
+
+                  //remove disallowed characters
+                  val = val.replace(/[^0-9.]/g, '');
+
+                  //prevents more than 1 decimal
+                  const parts = val.split('.');
+                  if (parts.length > 2) {
+                    val = parts[0] + '.' + parts[1];
+                  }
+
+                  //auto add ".0" if input is whole number
+                  if (val && !val.includes('.')) {
+                    val = val + '.0';
+                  }
+                  handleChange('financial', 'annualSalaryGrowth', val)}}
+                placeholder='Ex: 3.3'
             />
+            <small>Input value as a percentage (%)</small>
             </div>
 
             <div className='form-group'>
                 <div className="inline-double">
                     <div className='half-field'>
                         <label className='form-label'>Total Savings</label>
-                        <input
-                            type="text"
-                            className='form-input'
-                            value={formData.financial.totalSavings}
-                            onChange={(e) =>
-                            handleChange('financial', 'totalSavings', e.target.value)
-                            }
-                        />
+                        <div className='input-with-prefix'>
+                          <span className='dollarSign-prefix'>$</span>
+                          <input
+                              type="text"
+                              className='form-input'
+                              value={formData.financial.totalSavings.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+                              onChange={(e) => {
+                                //remove non-digit chars
+                                const numericValue = e.target.value.replace(/\D/g, '');
+                                //keep the raw numbers w/o commas
+                                handleChange('financial', 'totalSavings', numericValue)
+                              }}
+                              placeholder='Ex: 200000'
+                          />
+                        </div>
                     </div>
 
                     <div className='half-field'>
                         <label className='form-label'>Total Debt</label>
-                        <input
-                            type="text"
-                            className='form-input'
-                            value={formData.financial.totalDebt}
-                            onChange={(e) =>
-                            handleChange('financial', 'totalDebt', e.target.value)
-                            }
-                        />
+                        <div className='input-with-prefix'>
+                          <span className='dollarSign-prefix'>$</span>
+                          <input
+                              type="text"
+                              className='form-input'
+                              value={formData.financial.totalDebt.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+                              onChange={(e) => {
+                                const numericValue = e.target.value.replace(/\D/g, '');
+                                handleChange('financial', 'totalDebt', numericValue)
+                              }}
+                              placeholder='Ex: 1000'
+                          />
+                        </div>
                     </div>
                 </div>
             </div>
 
             <div className="form-group full-width">
                 <label className='form-label'> Financial Goals</label>
-                <input
-                    type="text"
-                    className='form-input'
+                <textarea
+                    className='form-input textarea-resizable'
                     value={formData.financial.financialGoal}
                     onChange={(e) =>
-                    handleChange('financial', 'financialGoal', e.target.value)
+                    handleChange('financial', 'financialGoal', e.target.value.slice(0, 500)) //force 500 char limit
                     }
+                  maxLength={500}
+                  placeholder='Retirement at 65, college funds for children, etc'
                 />
+                <small>{formData.financial.financialGoal.length}/500 characters</small>
             </div>
         </div>
     );
@@ -270,46 +375,66 @@ const ClientAdd = () => {
                 type="text"
                 className='form-input'
                 value={formData.retirement.targetAge}
-                onChange={(e) =>
-                handleChange('retirement', 'targetAge', e.target.value)
-                }
+                onChange={(e) => {
+                  //allow only digits
+                  const numericValue = e.target.value.replace(/\D/g, '');
+                  handleChange('retirement', 'targetAge', numericValue);
+                }}
+                placeholder='Ex: 65'
             />
             </div>
 
             <div className="form-group">
-            <label className='form-label'>Desired Annual Retirement Income</label>
-            <input
-                type="text"
-                className='form-input'
-                value={formData.retirement.desiredIncome}
-                onChange={(e) =>
-                handleChange('retirement', 'desiredIncome', e.target.value)
-                }
-            />
+              <label className='form-label'>Desired Annual Retirement Income</label>
+              <div className='input-with-prefix'>
+                <span className='dollarSign-prefix'>$</span>
+                <input
+                    type="text"
+                    className='form-input'
+                    value={formData.retirement.desiredIncome.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+                    onChange={(e) => {
+                      //delet non-digit chars
+                      const numericValue = e.target.value.replace(/\D/g, '');
+                      handleChange('retirement', 'desiredIncome', numericValue);
+                    }}
+                    placeholder='Ex: 50000'
+                />
+              </div>
+              <small>Ensure input is annual, not monthly</small>
             </div>
 
             <div className="form-group">
-            <label className='form-label'>Roth IRA Balance</label>
-            <input
-                type="text"
-                className='form-input'
-                value={formData.retirement.rothBalance}
-                onChange={(e) =>
-                handleChange('retirement', 'rothBalance', e.target.value)
-                }
-            />
+              <label className='form-label'>Roth IRA Balance</label>
+              <div className='input-with-prefix'>
+                <span className='dollarSign-prefix'>$</span>
+                <input
+                    type="text"
+                    className='form-input'
+                    value={formData.retirement.rothBalance.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+                    onChange={(e) => {
+                      const numericValue = e.target.value.replace(/\D/g, '');
+                      handleChange('retirement', 'rothBalance', numericValue);
+                    }}
+                    placeholder='Ex: 2000'
+                />
+              </div>
             </div>
 
             <div className="form-group">
-            <label className='form-label'>Traditional IRA Balance</label>
-            <input
-                type="text"
-                className='form-input'
-                value={formData.retirement.traditionalBalance}
-                onChange={(e) =>
-                handleChange('retirement', 'traditionalBalance', e.target.value)
-                }
-            />
+              <label className='form-label'>Traditional IRA Balance</label>
+              <div className='input-with-prefix'>
+                <span className='dollarSign-prefix'>$</span>
+                <input
+                    type="text"
+                    className='form-input'
+                    value={formData.retirement.traditionalBalance.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+                    onChange={(e) => {
+                      const numericValue = e.target.value.replace(/\D/g, '');
+                      handleChange('retirement', 'traditionalBalance', numericValue);
+                    }}
+                    placeholder='Ex: 2000'
+                />
+              </div>
             </div>
         </div>
     );
