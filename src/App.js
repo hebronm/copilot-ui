@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import "./CSS_Files/App.css"
 import { BrowserRouter as Router, Routes, Route, Link, useLocation, useNavigate } from "react-router-dom"
-import { Dashboard, ClientDetail, ClientAdd, ClientTable, IRACalculator, DataAnalysis, EmployeeTable, FAQ } from './components'; // Update index if adding new components
+import { Login, Dashboard, ClientDetail, ClientAdd, ClientTable, IRACalculator, DataAnalysis, EmployeeTable, FAQ } from './components'; // Update index if adding new components
 
 
 function Navigation({ currentUser, onLogout }) {
@@ -11,7 +11,6 @@ function Navigation({ currentUser, onLogout }) {
   const navigate = useNavigate()
 
   const showNavTabs = location.pathname === "/calculators";
-
   const isClientDetailPage = location.pathname.startsWith("/client/");
   const isDashboardPage = location.pathname === "/";
 
@@ -69,57 +68,6 @@ function Navigation({ currentUser, onLogout }) {
   )
 }
 
-function LoginForm({ onLogin }) {
-  const [username, setUsername] = useState("")
-  const [password, setPassword] = useState("")
-
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    if (username && password) {
-      onLogin(username)
-    }
-  }
-
-  return (
-    <div className="login-container">
-      <div className="login-card">
-        <div className="login-header">
-          <h2>IRA Calculator Login</h2>
-          <p>Sign in to access your retirement planning tools</p>
-        </div>
-        <form onSubmit={handleSubmit} className="login-form">
-          <div className="form-group">
-            <label htmlFor="username">Username</label>
-            <input
-              id="username"
-              type="text"
-              placeholder="Enter your username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              required
-            />
-          </div>
-          <div className="form-group">
-            <label htmlFor="password">Password</label>
-            <input
-              id="password"
-              type="password"
-              placeholder="Enter your password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
-          <button type="submit" className="login-btn">
-            Sign In
-          </button>
-        </form>
-        <div className="login-demo-note">Demo: Use any username and password to login</div>
-      </div>
-    </div>
-  )
-}
-
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [currentUser, setCurrentUser] = useState("")
@@ -145,7 +93,7 @@ function App() {
   }
 
   if (!isLoggedIn) {
-    return <LoginForm onLogin={handleLogin} />
+    return <Login onLogin={handleLogin} />
   }
 
   return (

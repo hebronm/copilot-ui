@@ -138,7 +138,7 @@ input {
   padding: 10px;
   font-size: 20px;
   /*Needed inorder to bypass MUI stock styling*/
-  border-radius: 5px !important;
+  border-radius: 5px;
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
@@ -165,17 +165,4 @@ input {
 
 .save-button {
   background: #28a745;
-}
-
-/*Override global App.css input style */
-.client-add-container input[type="text"],
-.client-add-container input[type="email"],
-.client-add-container input[type="tel"],
-.client-add-container input[type="date"],
-.client-add-container input[type="password"] {
-  width: 100%;            /*Fix width*/
-  border-radius: 5px;     /*round corners*/
-  padding: 10px;
-  margin-bottom: 0;       /*Lets spacing be handled by .form-group*/
-  box-sizing: border-box; /*To ensures consistent sizing*/
 }
