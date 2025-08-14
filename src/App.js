@@ -23,21 +23,23 @@ function Navigation({ currentUser, onLogout }) {
     <div className="app-header">
       <div className="header-content">
         <div className="header-left">
-          <h1 className="app-title">Financial Copilot Suite</h1>
+          <button className="app-title" onClick={handleBackClick}>
+            Financial Copilot Suite
+          </button>
         </div>
         <div className="header-right">
-          <button
-            className="debug-btn"
-            onClick={() => navigate("/clientTable")}
-            style={{ marginRight: "10px", backgroundColor: "#f39c12", color: "#fff" }}
-          >
-            DEBUG
-          </button>
+          {!isClientDetailPage && isDashboardPage && (
+            <button
+              className="debug-btn"
+              onClick={() => navigate("/clientTable")}>
+              DEBUG
+            </button>
+          )}
           
           {/* Show this button only on Client Detail page, not on Dashboard */}
           {isClientDetailPage && !isDashboardPage && (
             <button className="back-btn" onClick={handleBackClick}>
-              ← Back to Dashboard
+              ← Dashboard
             </button>
           )}
           <span className="user-welcome">Welcome, {currentUser}</span>

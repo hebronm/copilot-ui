@@ -56,44 +56,81 @@
 
 .app-title {
   color: #333;
-  font-size: 1.5rem;
+  background-color: #fff;
+  font-size: 35px;
+  font-weight: bold;
   margin: 0;
+  padding: 5px 10px;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: none;
+  border-top: 1px solid #fff;
+  border-bottom: 1px solid #e0e0e0;
+  cursor: pointer;
+  transition: background-color 0.2s;
 }
 
+.app-title:hover {
+  background-color: #e0e0e0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+  border: 1px solid #dddddd;
+}
+
+.app-title:active {
+  background-color: #d3d3d3;
+}
+
+/*buttons and items on the right side (debug, back to dash, welcom, logout)*/
 .header-right {
   display: flex;
   align-items: center;
   gap: 1rem;
 }
 
-.back-btn {
-  margin-right: 15px;
-  padding: 6px 12px;
+.debug-btn {
+  margin-right: 10px;
   background-color: #ddd;
+  color: #aaaaaa;
+  font-weight: bold;
+  font-size: 16px;
+  padding: 10px 15px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+}
+
+.back-btn {
+  margin-top: 3px;
+  margin-right: 10px;
+  padding: 10px 15px;
+  background-color: #fff;
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 18px;
+  font-weight: bold;
 }
 
 .back-btn:hover {
-  background-color: #ccc;
+  color:#9c9c9c
 }
 
 
 .user-welcome {
   color: #666;
-  font-size: 14px;
+  font-size: 18px;
+  margin-right: 10px;
 }
 
 .logout-btn {
   background-color: #dc3545;
   color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 4px;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.15);
+  border: 1px solid #ddd;
+  padding: 10px 16px;
+  border-radius: 5px;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 16px;
   transition: background-color 0.2s;
 }
 
