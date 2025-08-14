@@ -31,6 +31,7 @@
   background-color: #e8eaf6;
   padding: 8px;
   border-radius: 10px;
+  gap: 10px;
 }
 
 .nav-tab {
@@ -43,8 +44,14 @@
   transition: all 0.3s ease;
   font-weight: bold;
   color:#59618a;
-  border-radius: 10px;
+  border-radius: 5px;
   flex-grow: 1;
+  padding: 5px;
+}
+
+.nav-tab:hover {
+  color: #374151;
+  background-color: #d6daee;
 }
 
 .nav-tab.active {
@@ -64,7 +71,7 @@
   flex: 1;
   justify-content: space-evenly;
   margin-bottom: 20px;
-  gap: 1px;
+  gap: 10px;
   width: 50%;
   margin: 0 auto;
   background-color: #c3c9f0;
@@ -80,10 +87,16 @@
   text-align: center; 
   transition: all 0.01s ease;
   font-weight: bold;
-  color:#384064;
-  border-radius: 10px;
+  color:#596286;
+  border-radius: 5px;
   background: none;
   flex-grow: 1;
+  padding: 5px;
+}
+
+.sub-nav-tab:hover {
+  color: #2a3568;
+  background-color: #9ea4c7;
 }
 
 .sub-nav-tab.active {

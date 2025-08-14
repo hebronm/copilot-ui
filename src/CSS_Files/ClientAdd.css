@@ -46,7 +46,7 @@ header p {
 }
 
 .client-add-tab {
-  font-size: 18px;
+  font-size: 20px;
   border: none;
   cursor: pointer;
   flex: 1;
@@ -56,6 +56,7 @@ header p {
   color: #384064;
   border-radius: 5px;
   background: none;
+  padding: 5px;
 }
 
 .client-add-tab:hover {
@@ -159,16 +160,25 @@ header p {
 
 .cancel-button,
 .save-button {
-  background: #ccc;
+  background: #999999;
   color: white;
   padding: 10px 20px;
   border: none;
   border-radius: 5px;
   font-size: 18px;
+  cursor: pointer;
+}
+
+.cancel-button:hover {
+  background-color: #ca0e0e;
 }
 
 .save-button {
   background: #28a745;
+}
+
+.save-button:hover {
+  background-color: #31c754;
 }
 
 .input-with-prefix {
