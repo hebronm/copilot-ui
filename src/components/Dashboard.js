@@ -38,6 +38,29 @@ function Dashboard() {
   const handleDeleteClick = (clientId) => {
     //TODO: implement deletion here
     console.log("Delete clicked for client id:", clientId);
+
+    //confirm prompt user
+    const confirmDelete = window.confirm(
+      "You are about to delete a client. Deleted client information cannot be recovered. Are you sure?"
+    );
+    if (!confirmDelete) return;
+
+    //backend call
+    fetch(`http://34.217.130.235:8080/clients/${clientId}`, {
+      method: "DELETE"
+    })
+    .then((res) => {
+      if (!res.ok) throw new Error(`Error: ${res.status}`);
+      //update UI by removing the deleted client
+      setClients((prev) => prev.filter((client) => client.id !== clientId));
+
+      //success/fail message
+      alert("Client deletion successful!");
+    })
+    .catch((err) => {
+      console.error("Failed to delete client:", err);
+      alert("An error occurred while deleting the client. Please wait and try again later.");
+    });
   };
 
   const handleAddClientClick = () => {
