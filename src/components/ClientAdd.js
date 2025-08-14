@@ -34,7 +34,7 @@ const ClientAdd = () => {
     },
   });
 
-  const handleChange = (tab, field, value) => {
+  /*const handleChange = (tab, field, value) => {
     setFormData(prev => ({
       ...prev,
       [tab]: {
@@ -42,9 +42,59 @@ const ClientAdd = () => {
         [field]: value,
       },
     }));
+  };*/
+
+  const handleChange = (tab, field, value) => {
+    setFormData(prev => {
+      let updatedTabData = {
+        ...prev[tab],
+        [field]: value,
+      };
+
+      //if updating the birthdate, calculate & store age
+      if (tab === 'personal' && field === 'birthdate') {
+        const birthDateObj = new Date(value);
+        if (!isNaN(birthDateObj)) {
+          const today = new Date();
+          let age = today.getFullYear() - birthDateObj.getFullYear();
+          const monthDiff = today.getMonth() - birthDateObj.getMonth();
+          if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDateObj.getDate())) {
+            age--;
+          }
+          updatedTabData.age = age; //store calculated age
+        } else {
+          updatedTabData.age = ''; //invalid date
+        }
+      }
+
+      return {
+        ...prev,
+        [tab]: updatedTabData,
+      };
+    });
   };
 
+
   const validateFields = () => {
+  const missing = [];
+
+  Object.entries(formData).forEach(([section, fields]) => {
+    Object.entries(fields).forEach(([field, value]) => {
+      if (value === undefined || value === null || String(value).trim() === '') {
+        missing.push(`${section}.${field}`);
+      }
+    });
+  });
+
+  if (missing.length) {
+    console.warn('Missing required fields:', missing);
+  }
+
+  return { ok: missing.length === 0, missing };
+};
+
+  
+/*const validateFields = () => {
     //Flatten all values from both personal & finance sections
     const allValues = [
         ...Object.values(formData.personal),
@@ -52,15 +102,37 @@ const ClientAdd = () => {
         ...Object.values(formData.retirement),
     ];
 
-    //if any value empty or just whitespace, return false
-    return allValues.every(value => value.trim() !== '');
+    //if any value null or undefined, return false (0 becomes "0" so it passes)
+    return allValues.every(value => {
+      if (value === null || value === undefined) return false;
+      const str = String(value).trim();
+      return str !== '';
+    });
+  };*/
+
+  //calculate age from the birthdate field
+  const calculateAge = (birthdate) => {
+    if (!birthdate) return null;
+    const today = new Date();
+    const dob = new Date(birthdate);
+    let age = today.getFullYear() - dob.getFullYear();
+    const m = today.getMonth() - dob.getMonth();
+
+    // Adjust if birthday hasn't occurred yet this year
+    if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
+      age--;
+    }
+    return age;
   };
+
 
   //Parses input like "100,200,300" into [100, 200, 300]
   const parseInputArray = (input) => {
     return input
       .toString()
       .split(',')
+      .map(item => item.trim())
+      .filter(item => item !== '')
       .map(item => parseFloat(item.trim()))
       .filter(item => !isNaN(item));
   };
@@ -84,13 +156,31 @@ const ClientAdd = () => {
   
   const handleSave = () => {
     
-    //validation check before saving
-    if (!validateFields()) {
-      alert("Could not save client! There are empty fields.");
-      return;
+    //calc age from birthdate if age is missing; msut be before validation
+    const age = formData.personal.age || (formData.personal.birthdate ? calculateAge(formData.personal.birthdate) : null);
+
+    //validate that age is positive
+    if (age === null || age <= 0) {
+      alert("Please enter a valid birthdate. Age must be at least 1 year.");
+      return; 
     }
 
-    console.log("Client data fields pass empty validation: ", formData);
+    //update formData so it contains the calculated age
+    setFormData(prev => ({
+      ...prev,
+      personal: {
+        ...prev.personal,
+        age
+      }
+    }));
+    
+    const { ok, missing } = validateFields();
+    if (!ok) {
+      alert("Could not save client! There are empty fields.");
+      
+      console.log('Empty fields:', missing);
+      return;
+    }
 
     //Check for annual income and monthly contribution
     /**
@@ -123,8 +213,8 @@ const ClientAdd = () => {
       phoneNumber: formData.personal.phoneNumber,
       address: formData.personal.address,
       occupation: formData.personal.occupation,
-      annualIncome: parseInputArray(formData.financial.annualIncome), // 🔧 Array
-      monthlyContribution: parseInputArray(formData.financial.monthlyContribution), // 🔧 Array
+      annualIncome: parseInputArray(formData.financial.annualIncome), //array
+      monthlyContribution: parseInputArray(formData.financial.monthlyContribution), //array
       annualSalaryGrowth: parseFloat(formData.financial.annualSalaryGrowth),
       totalSavings: parseFloat(formData.financial.totalSavings),
       totalDebt: parseFloat(formData.financial.totalDebt),
@@ -204,8 +294,8 @@ const ClientAdd = () => {
                     className='form-input'
                     value={formatPhoneNumber(formData.personal.phoneNumber)}
                     onChange={(e) => {
-                      //keep only digits in submit state
-                      const numericValue = e.target.value.replace(/\D/g, '');
+                      //keep only digits in submit state & limit to 10
+                      const numericValue = e.target.value.replace(/\D/g, '').substring(0, 10);
                       handleChange('personal', 'phoneNumber', numericValue);
                     }}
                     placeholder='(123) 456-7890'
@@ -220,6 +310,9 @@ const ClientAdd = () => {
                     value={formData.personal.birthdate}
                     onChange={(e) => handleChange('personal', 'birthdate', e.target.value)}
                 />
+                {formData.personal.age !== undefined && formData.personal.age !== '' && (
+                  <small className="form-text">Age: {formData.personal.age}</small>
+                )}
             </div>
 
             <div className="form-group">
@@ -356,12 +449,12 @@ const ClientAdd = () => {
                     className='form-input textarea-resizable'
                     value={formData.financial.financialGoal}
                     onChange={(e) =>
-                    handleChange('financial', 'financialGoal', e.target.value.slice(0, 500)) //force 500 char limit
+                    handleChange('financial', 'financialGoal', e.target.value.slice(0, 255)) //force 255 char limit; backend limits it to 255, maybe ask future to change to 500
                     }
-                  maxLength={500}
+                  maxLength={255}
                   placeholder='Retirement at 65, college funds for children, etc'
                 />
-                <small>{formData.financial.financialGoal.length}/500 characters</small>
+                <small>{formData.financial.financialGoal.length}/255 characters</small>
             </div>
         </div>
     );

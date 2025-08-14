@@ -27,6 +27,10 @@ function Overview({ client }) {
 
   //Calc Total Asset
   //This obviously needs updating in later updates, this is just a temporary case for now
+  /*some notes:
+  the input field logic prevents negative values from being sent.
+  It also prevents decimal and comma values from being sent. 
+  If decimals needed, need to implement logic later */
   const totalAssets =
     (totalSavings || 0) +
     (rothIRABalance || 0) +
@@ -39,6 +43,9 @@ function Overview({ client }) {
 
   //Figure Tax Brack using 2024 U.S. Federal single filer brackets
   //Need to update later with married/single/HOH tax options
+  /* some notes:
+  apparently, it truncates the income so even if its 100525.99, 
+  it truncates it and puts it in 22% threshold */
   const calculateTaxBracket = (income) => {
     if (income <= 11600) return '10%';
     if (income <= 47150) return '12%';
