@@ -1,6 +1,7 @@
 "use client"
-
-import { useState, useMemo } from "react"
+import "../CSS_Files/DataAnalysis.css"
+import { calculateNetSalary, calculateRelativeTaxPercentage } from './functions.js'
+import React, { useState, useMemo } from "react"
 import {
   LineChart,
   Line,
@@ -12,6 +13,7 @@ import {
   ResponsiveContainer,
   BarChart,
   Bar,
+  ReferenceLine 
 } from "recharts"
 
 function getSliderTrackStyle(value, min = 0, max = 100) {
@@ -21,6 +23,7 @@ function getSliderTrackStyle(value, min = 0, max = 100) {
   }
 }
 
+/*
 // Tax bracket calculator (simplified 2024 brackets)
 function getTaxRate(income) {
   if (income <= 11000) return 10
@@ -31,11 +34,26 @@ function getTaxRate(income) {
   if (income <= 578125) return 35
   return 37
 }
+*/
+
+export const taxes2024 = [
+  [11000, 10],   
+  [44725, 12],  
+  [95375, 22], 
+  [182050, 24],
+  [231250, 32],
+  [578125, 35], 
+  [Infinity, 37]
+];
+
+//create a section for tax bracket ranges and default it ot taxes2024
+//save it in a variable just like the rest (currentAge, startingSalary, etc.)
+
 
 // Calculate realistic retirement tax rate based on withdrawal amount
 function calculateRetirementTaxRate(annualWithdrawal, socialSecurity = 20000, otherIncome = 5000) {
   const totalRetirementIncome = annualWithdrawal + socialSecurity * 0.85 + otherIncome // 85% of SS is taxable
-  return getTaxRate(totalRetirementIncome)
+  return calculateRelativeTaxPercentage(taxes2024, totalRetirementIncome)
 }
 
 function DataAnalysis() {
@@ -55,6 +73,9 @@ function DataAnalysis() {
   const [simpleIncome, setSimpleIncome] = useState(75000)
   const [simpleContribution, setSimpleContribution] = useState(500)
   const [salaryGrowthRate, setSalaryGrowthRate] = useState(3)
+
+  // tax bracket ranges
+  const [myBracket, setMyBracket] = useState(taxes2024)
 
   // Calculate realistic retirement tax rate
   const retirementTaxRate = calculateRetirementTaxRate(
@@ -87,12 +108,12 @@ function DataAnalysis() {
       if (useYearByYear && yearByYearData[year]) {
         return {
           salary: yearByYearData[year].salary,
-          contribution: yearByYearData[year].contribution,
+          contribution: yearByYearData[year].contribution
         }
       } else {
         return {
           salary: simpleIncome * Math.pow(1 + salaryGrowthRate / 100, year),
-          contribution: simpleContribution * Math.pow(1 + salaryGrowthRate / 100, year),
+          contribution: simpleContribution * Math.pow(1 + salaryGrowthRate / 100, year)
         }
       }
     }
@@ -102,7 +123,7 @@ function DataAnalysis() {
       alwaysTraditional: { balance: startingBalance },
       alwaysRoth: { balance: startingBalance },
       switching: {
-        traditionalBalance: startingBalance,
+        traditionalBalance: 0,
         rothBalance: 0,
         currentStrategy: null,
       },
@@ -115,38 +136,27 @@ function DataAnalysis() {
     for (let year = 0; year <= yearsToRetirement; year++) {
       const currentAgeInYear = currentAge + year
       const { salary, contribution } = getSalaryData(year)
-      const taxRateThisYear = getTaxRate(salary)
+      const taxRateThisYear = calculateRelativeTaxPercentage(myBracket, salary)
       const monthlyContribution = contribution
 
-      // CORRECTED: More realistic switching thresholds
       const taxDifference = taxRateThisYear - retirementTaxRate
+    
       let optimalStrategy
 
-      if (taxDifference >= 4) {
-        // Current tax rate is 4+ points higher - Traditional wins
-        optimalStrategy = "Traditional"
-      } else if (taxDifference <= -3) {
-        // Retirement tax rate is 3+ points higher - Roth wins
-        optimalStrategy = "Roth"
-      } else if (currentAgeInYear < 35 && salary < 70000) {
-        // Young with moderate income - favor Roth for long growth
-        optimalStrategy = "Roth"
-      } else if (salary > 100000 && taxDifference >= 2) {
-        // High income with some tax savings - favor Traditional
+      if (taxDifference > 0) {
         optimalStrategy = "Traditional"
       } else {
-        // Default: stick with current strategy (no switching for small differences)
-        optimalStrategy = scenarios.switching.currentStrategy || "Traditional"
+        optimalStrategy = "Roth"
       } 
+      
+
 
       let traditionalAmount = 0
       let rothAmount = 0      
 
-
       // Apply growth and contributions for this year
       if (year > 0) {
         const afterTaxContribution = monthlyContribution
-
 
         // Scenario 1: Always Traditional
         for (let month = 0; month < 12; month++) {
@@ -184,19 +194,31 @@ function DataAnalysis() {
 
         // Apply contributions based on current strategy
         for (let month = 0; month < 12; month++) {
-          scenarios.switching.traditionalBalance = scenarios.switching.traditionalBalance * (1 + monthlyReturn)
-          scenarios.switching.rothBalance = scenarios.switching.rothBalance * (1 + monthlyReturn)
+          // Apply growth to both accounts
+          scenarios.switching.traditionalBalance *= (1 + monthlyReturn)
+          scenarios.switching.rothBalance *= (1 + monthlyReturn)
 
+          // Only contribute to one account based on current strategy
           if (scenarios.switching.currentStrategy === "Traditional") {
             const preTaxContribution = afterTaxContribution / (1 - taxRateThisYear / 100)
             scenarios.switching.traditionalBalance += preTaxContribution
-          } else if (scenarios.switching.currentStrategy === "Roth") {
+          } else {
             scenarios.switching.rothBalance += afterTaxContribution
           }
         }
       } else {
         // Year 0 - set initial strategy
+        if(optimalStrategy == "Roth"){
+          scenarios.switching.rothBalance = startingBalance;
+        } else {
+          scenarios.switching.traditionalBalance = startingBalance;
+        }
+
+        
+
         scenarios.switching.currentStrategy = optimalStrategy
+
+
       }
 
   
@@ -225,6 +247,7 @@ function DataAnalysis() {
         alwaysTraditional: alwaysTraditionalAfterTax,
         alwaysRoth: alwaysRothAfterTax,
         switchingStrategy: switchingTotal,
+        
 
 
         // Strategy info
@@ -290,7 +313,7 @@ function DataAnalysis() {
 
   const updateYearData = (yearIndex, field, value) => {
     const newData = [...yearByYearData]
-    newData[yearIndex] = { ...newData[yearIndex], [field]: Number(value) }
+    newData[yearIndex] = {...newData[yearIndex], [field]: Number(value) }
     setYearByYearData(newData)
   }
 
@@ -303,10 +326,10 @@ function DataAnalysis() {
           Based on real-world contribution limits and tax optimization strategies
         </p>
 
-        <fieldset>
+        <fieldset className="DA-field">
           <h2 style={{ textAlign: "center" }}>Basic Parameters</h2>
-          <div className="center-container">
-            <label className="label">
+          <div className="DA-center-container">
+            <label className="DA-label">
               Current Age: <b>{currentAge}</b>
             </label>
             <input
@@ -319,7 +342,7 @@ function DataAnalysis() {
               style={getSliderTrackStyle(currentAge, 18, 70)}
             />
 
-            <label className="label">
+            <label className="DA-label">
               Retirement Age: <b>{retirementAge}</b>
             </label>
             <input
@@ -332,7 +355,7 @@ function DataAnalysis() {
               style={getSliderTrackStyle(retirementAge, currentAge + 1, 85)}
             />
 
-            <label className="label">
+            <label className="DA-label">
               Expected Annual Return: <b>{expectedReturn}%</b>
             </label>
             <input
@@ -346,7 +369,7 @@ function DataAnalysis() {
               style={getSliderTrackStyle(expectedReturn, 3, 12)}
             />
 
-            <label className="label">
+            <label className="DA-label">
               Starting Balance: <b>${startingBalance.toLocaleString()}</b>
             </label>
             <input
@@ -363,7 +386,7 @@ function DataAnalysis() {
         </fieldset>
 
         {/* Preset Scenarios */}
-        <fieldset>
+        <fieldset className="DA-field">
           <h2 style={{ textAlign: "center" }}>Quick Test Scenarios</h2>
           <div
             style={{
@@ -374,7 +397,7 @@ function DataAnalysis() {
             }}
           >
             <button
-              className="submit-btn"
+              className="preset-btn"
               onClick={() => {
                 setCurrentAge(30)
                 setRetirementAge(65)
@@ -386,16 +409,17 @@ function DataAnalysis() {
                 setDesiredRetirementIncome(60000)
                 setSocialSecurityIncome(20000)
                 setOtherRetirementIncome(5000)
+
               }}
               style={{ padding: "1rem", fontSize: "0.9rem" }}
             >
               📊 Default Scenario
               <br />
-              <small>Traditional usually wins</small>
+              <small className="DA-small">Traditional usually wins</small>
             </button>
 
             <button
-              className="submit-btn"
+              className="preset-btn"
               onClick={() => {
                 setCurrentAge(25)
                 setRetirementAge(67)
@@ -412,11 +436,11 @@ function DataAnalysis() {
             >
               🚀 Career Growth
               <br />
-              <small>Switching strategy wins</small>
+              <small className="DA-small">Switching strategy wins</small>
             </button>
 
             <button
-              className="submit-btn"
+              className="preset-btn"
               onClick={() => {
                 setCurrentAge(28)
                 setRetirementAge(65)
@@ -433,11 +457,11 @@ function DataAnalysis() {
             >
               💰 High Retirement Income
               <br />
-              <small>Roth strategy wins</small>
+              <small className="DA-small">Roth strategy wins</small>
             </button>
 
             <button
-              className="submit-btn"
+              className="preset-btn"
               onClick={() => {
                 setCurrentAge(22)
                 setRetirementAge(65)
@@ -454,11 +478,11 @@ function DataAnalysis() {
             >
               🎓 Young Professional
               <br />
-              <small>Dramatic income growth</small>
+              <small className="DA-small">Dramatic income growth</small>
             </button>
 
             <button
-              className="submit-btn"
+              className="preset-btn"
               onClick={() => {
                 setCurrentAge(40)
                 setRetirementAge(70)
@@ -475,7 +499,7 @@ function DataAnalysis() {
             >
               🏢 High Earner
               <br />
-              <small>Late starter, high income</small>
+              <small className="DA-small">Late starter, high income</small>
             </button>
           </div>
           <div style={{ textAlign: "center", padding: "1rem", backgroundColor: "#f0f8ff", borderRadius: "8px" }}>
@@ -488,11 +512,112 @@ function DataAnalysis() {
           </div>
         </fieldset>
 
+        {/* Tax Brackets Section */}
+        <div className="form-box">
+          <fieldset className="DA-field">
+            <h2 style={{ textAlign: "center" }}>Tax Brackets 2024 (Change for Custom)</h2>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 50px", gap: "0.5rem", alignItems: "center" }}>
+              <label><b>Min</b></label>
+              <label><b>Max</b></label>
+              <label><b>Rate</b></label>
+              <div></div> {/* For delete button header */}
+
+              {myBracket.map((bracket, i) => {
+                const min = i === 0 ? 0 : myBracket[i - 1][0] + 1;
+                const max = bracket[0];
+                const rate = bracket[1];
+                const isLast = i === myBracket.length - 1;
+
+                return (
+                  <React.Fragment key={i}>
+                    {/* Min (readonly, calculated) */}
+                    <input
+                      type="number"
+                      value={min}
+                      readOnly
+                      className="DA-input"
+                    />
+
+                     {/* Max: editable except last one */}
+                    {isLast ? (
+                      <input
+                        type="text"
+                        value="∞"
+                        readOnly
+                        className="DA-input"
+                        style={{ textAlign: "center" }}
+                        title="Last bracket max is infinite"
+                      />
+                    ) : (
+                      <input
+                        type="number"
+                        value={max}
+                        className="DA-input"
+                        onChange={(e) => {
+                          const updated = [...myBracket];
+                          updated[i][0] = Number(e.target.value);
+                          setMyBracket(updated);
+                        }}
+                      />
+                    )}
+
+                    {/* Rate (editable) */}
+                    <input
+                      type="number"
+                      step="0.01"
+                      value={rate}
+                      className="DA-input"
+                      onChange={(e) => {
+                        const updated = [...myBracket];
+                        updated[i][1] = Number(e.target.value);
+                        setMyBracket(updated);
+                      }}
+                    />
+
+                    {/* Delete row button */}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (myBracket.length > 1) {
+                          const updated = myBracket.filter((_, index) => index !== i);
+                          setMyBracket(updated);
+                        }
+                      }}
+                      style={{ cursor: myBracket.length > 1 ? "pointer" : "not-allowed" }}
+                      disabled={myBracket.length <= 1}
+                      title={myBracket.length <= 1 ? "Must have at least one bracket" : "Delete bracket"}
+                    >
+                      &times;
+                    </button>
+                  </React.Fragment>
+                );
+              })}
+
+              {/* Add new bracket button spanning all columns */}
+              <button
+                type="button"
+                style={{ gridColumn: "span 4", marginTop: "1rem" }}
+                onClick={() => {
+                  // Add new bracket with default values:
+                  // min will auto-calc based on last bracket max + 1
+                  const lastMax = myBracket.length ? myBracket[myBracket.length - 1][0] : 0;
+                  const newBracket = [lastMax + 1, 0.10]; // max = last max + 1, rate default 10%
+                  setMyBracket([...myBracket, newBracket]);
+                }}
+              >
+                + Add New Bracket
+              </button>
+            </div>
+          </fieldset>
+        </div>
+
+
+
         {/* Retirement Income Planning */}
-        <fieldset>
+        <fieldset className="DA-field">
           <h2 style={{ textAlign: "center" }}>Retirement Income Planning</h2>
-          <div className="center-container">
-            <label className="label">
+          <div className="DA-center-container">
+            <label className="DA-label">
               Desired Annual Retirement Income: <b>${desiredRetirementIncome.toLocaleString()}</b>
             </label>
             <input
@@ -505,9 +630,9 @@ function DataAnalysis() {
               className="custom-slider"
               style={getSliderTrackStyle(desiredRetirementIncome, 30000, 150000)}
             />
-            <small>How much you want to withdraw from IRAs annually</small>
+            <small className="DA-small">How much you want to withdraw from IRAs annually</small>
 
-            <label className="label">
+            <label className="DA-label">
               Expected Social Security: <b>${socialSecurityIncome.toLocaleString()}</b>
             </label>
             <input
@@ -521,7 +646,7 @@ function DataAnalysis() {
               style={getSliderTrackStyle(socialSecurityIncome, 0, 50000)}
             />
 
-            <label className="label">
+            <label className="DA-label">
               Other Retirement Income: <b>${otherRetirementIncome.toLocaleString()}</b>
             </label>
             <input
@@ -534,12 +659,12 @@ function DataAnalysis() {
               className="custom-slider"
               style={getSliderTrackStyle(otherRetirementIncome, 0, 30000)}
             />
-            <small>Pensions, part-time work, investment income</small>
+            <small className="DA-small">Pensions, part-time work, investment income</small>
 
             <div style={{ marginTop: "1rem", padding: "1rem", backgroundColor: "#e3f2fd", borderRadius: "8px" }}>
               <strong>Calculated Retirement Tax Rate: {retirementTaxRate}%</strong>
               <br />
-              <small>
+              <small className="DA-small">
                 Based on total retirement income of $
                 {/*Social Security Income is taxed only up to 85%*/}
                 {(desiredRetirementIncome + socialSecurityIncome * 0.85 + otherRetirementIncome).toLocaleString()}
@@ -549,7 +674,7 @@ function DataAnalysis() {
         </fieldset>
 
         {/* Income and Contribution Input Method */}
-        <fieldset>
+        <fieldset className="DA-field">
           <h2 style={{ textAlign: "center" }}>Career Income & Contribution Data</h2>
           <div style={{ textAlign: "center", marginBottom: "1rem" }}>
             <label style={{ marginRight: "1rem" }}>
@@ -573,8 +698,8 @@ function DataAnalysis() {
           </div>
 
           {!useYearByYear ? (
-            <div className="center-container">
-              <label className="label">
+            <div className="DA-center-container">
+              <label className="DA-label">
                 Current Annual Salary: <b>${simpleIncome.toLocaleString()}</b>
               </label>
               <input
@@ -587,9 +712,9 @@ function DataAnalysis() {
                 className="custom-slider"
                 style={getSliderTrackStyle(simpleIncome, 30000, 200000)}
               />
-              <small>Current tax bracket: {getTaxRate(simpleIncome)}%</small>
+              <small className="DA-small">Current tax bracket: {calculateRelativeTaxPercentage(myBracket, simpleIncome)}%</small>
 
-              <label className="label">
+              <label className="DA-label">
                 Monthly IRA Contribution: <b>${simpleContribution.toLocaleString()}</b>
               </label>
               <input
@@ -602,9 +727,9 @@ function DataAnalysis() {
                 className="custom-slider"
                 style={getSliderTrackStyle(simpleContribution, 100, 700)}
               />
-              <small>2024 IRA limit: $7,000/year ($583/month), $8,000 if 50+ ($667/month)</small>
+              <small className="DA-small">2024 IRA limit: $7,000/year ($583/month), $8,000 if 50+ ($667/month)</small>
 
-              <label className="label">
+              <label className="DA-label">
                 Annual Salary Growth: <b>{salaryGrowthRate}%</b>
               </label>
               <input
@@ -637,6 +762,7 @@ function DataAnalysis() {
                         <input
                           type="number"
                           value={Math.round(yearData.salary)}
+                          className="DA-input"
                           onChange={(e) => updateYearData(index, "salary", e.target.value)}
                           style={{ width: "100px", padding: "2px" }}
                         />
@@ -645,11 +771,12 @@ function DataAnalysis() {
                         <input
                           type="number"
                           value={Math.round(yearData.contribution)}
+                          className="DA-input"
                           onChange={(e) => updateYearData(index, "contribution", e.target.value)}
                           style={{ width: "80px", padding: "2px" }}
                         />
                       </td>
-                      <td>{getTaxRate(yearData.salary)}%</td>
+                      <td>{calculateRelativeTaxPercentage(myBracket, yearData.salary)}%</td>
                     </tr>
                   ))}
                 </tbody>
@@ -659,10 +786,10 @@ function DataAnalysis() {
         </fieldset>
 
         <div style={{ marginTop: "1rem", textAlign: "center" }}>
-          <button type="button" className="submit-btn">
+          <button type="button" className="calculate-btn">
             Calculate Optimal Strategy
           </button>
-          <button type="button" className="reset-btn" onClick={resetForm}>
+          <button type="button" className="reset-form-btn" onClick={resetForm}>
             Reset Form
           </button>
         </div>
@@ -697,7 +824,7 @@ function DataAnalysis() {
       {/* Account Growth Chart */}
       <div className="form-box" style={{ marginTop: "2rem" }}>
         <h3 style={{ textAlign: "center" }}>Strategy Comparison (After-Tax Values)</h3>
-        <fieldset>
+        <fieldset className="DA-field">
           <div style={{ height: "400px", width: "100%" }}>
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={analysis.yearlyData}>
@@ -730,10 +857,52 @@ function DataAnalysis() {
         </fieldset>
       </div>
 
+      {/* Growth of Switching only */}
+      <div className="form-box" style={{ marginTop: "2rem" }}>
+        <h3 style={{ textAlign: "center" }}>Switching Strategy Breakdown</h3>
+        <fieldset className="DA-field">
+          <div style={{ height: "400px", width: "100%" }}>
+            <ResponsiveContainer width="100%" height={300}>
+              <LineChart
+                data={analysis.yearlyData}
+                margin={{ top: 20, right: 30, left: 20, bottom: 0 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="age" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Line
+                  type="monotone"
+                  dataKey="switchingStrategy"
+                  stroke="#8884d8"
+                  name="Switching Total"
+                  strokeWidth={2}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="rothBalance"
+                  stroke="#82ca9d"
+                  name="Roth Portion"
+                  strokeWidth={2}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="traditionalAfterTax"
+                  stroke="#ffc658"
+                  name="Traditional Portion"
+                  strokeWidth={2}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </fieldset>
+      </div>
+
       {/* Tax Bracket and Salary Growth Chart */}
       <div className="form-box" style={{ marginTop: "2rem" }}>
         <h3 style={{ textAlign: "center" }}>Salary Growth & Tax Bracket Progression</h3>
-        <fieldset>
+        <fieldset className="DA-field">
           <div style={{ height: "400px", width: "100%" }}>
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={analysis.yearlyData}>
@@ -793,51 +962,73 @@ function DataAnalysis() {
       {/* Switching Strategy Visualization */}
       <div className="form-box" style={{ marginTop: "2rem" }}>
         <h3 style={{ textAlign: "center" }}>Switching Strategy Timeline</h3>
-        <fieldset>
+        <fieldset className="DA-field">
           <div style={{ height: "300px", width: "100%" }}>
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={analysis.yearlyData}>
+              <BarChart data={analysis.yearlyData} margin={{ top: 20, right: 30, left: 20, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="age" />
-                <YAxis tickFormatter={() => ""} />
+                <YAxis />
                 <Tooltip
                   formatter={(value, name, props) => [
-                    `${props.payload.currentStrategy} (Tax: ${props.payload.taxRate}%)`,
-                    "Strategy",
+                    `$${value.toLocaleString()}`,
+                    name,
                   ]}
                   labelFormatter={(label) => `Age: ${label}`}
                 />
+                <Legend />
+
+                {/* Stacked bars for Roth and Traditional balances */}
                 <Bar
-                  dataKey={(entry) => (entry.currentStrategy === "Traditional" ? 1 : 0)}
-                  stackId="strategy"
-                  fill="#FF5733"
-                  name="Traditional"
+                  dataKey="rothBalance"
+                  stackId="portfolio"
+                  fill="#82ca9d"
+                  name="Roth Portion"
                 />
                 <Bar
-                  dataKey={(entry) => (entry.currentStrategy === "Roth" ? 1 : 0)}
-                  stackId="strategy"
-                  fill="#2e7d32"
-                  name="Roth"
+                  dataKey="traditionalAfterTax"
+                  stackId="portfolio"
+                  fill="#ffc658"
+                  name="Traditional Portion"
                 />
+
+                {/* ReferenceLines for switch points */}
+                {analysis.switchPoints.length > 0 &&
+                  analysis.switchPoints.map((point, index) => (
+                    <ReferenceLine
+                      key={index}
+                      x={point.age}
+                      stroke="red"
+                      strokeDasharray="4 4"
+                      label={{
+                        position: 'top',
+                        value: `Switch to ${point.switchTo}`,
+                        fill: 'red',
+                        fontSize: 12,
+                        fontWeight: 'bold',
+                      }}
+                    />
+                  ))}
               </BarChart>
             </ResponsiveContainer>
           </div>
+            {/* Detailed switch points info panel */}
           <div style={{ marginTop: "1rem" }}>
             <h4>Switch Points:</h4>
             {analysis.switchPoints.length > 0 ? (
               <div className="switch-points">
                 {analysis.switchPoints.map((point, index) => (
-                  <div key={index} className="switch-point-item">
+                  <div key={index} className="switch-point-item" style={{ marginBottom: '1rem', borderBottom: '1px solid #ddd', paddingBottom: '0.5rem' }}>
                     <div className="switch-point-info">
-                      <div className="switch-year">
+                      <div className="switch-year" style={{ fontWeight: 'bold' }}>
                         Age {point.age} ({point.year})
                       </div>
                       <div className="switch-strategy">
-                        Switch from {point.switchFrom} to {point.switchTo}
+                        Switch from <strong>{point.switchFrom}</strong> to <strong>{point.switchTo}</strong>
                       </div>
                       <div style={{ fontSize: "0.8rem", color: "#666" }}>{point.reason}</div>
                     </div>
-                    <div className="switch-values">
+                    <div className="switch-values" style={{ marginTop: '0.5rem', fontSize: '0.9rem' }}>
                       <div>Salary: ${point.salary.toLocaleString()}</div>
                       <div>Tax Rate: {point.taxRate}%</div>
                     </div>
@@ -852,6 +1043,7 @@ function DataAnalysis() {
           </div>
         </fieldset>
       </div>
+
             
     </div>
   )

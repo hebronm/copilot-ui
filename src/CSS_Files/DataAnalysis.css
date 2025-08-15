@@ -1,203 +1,4 @@
-.App {
-  text-align: center;
-}
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-/* Login Styles */
-.login-container {
-  min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1rem;
-}
-
-.login-card {
-  background: white;
-  padding: 2rem;
-  border-radius: 12px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-  width: 100%;
-  max-width: 400px;
-}
-
-.login-header {
-  text-align: center;
-  margin-bottom: 2rem;
-}
-
-.login-header h2 {
-  color: #333;
-  margin-bottom: 0.5rem;
-}
-
-.login-header p {
-  color: #666;
-  font-size: 14px;
-}
-
-.login-form {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.form-group label {
-  font-weight: 500;
-  color: #333;
-  text-align: left;
-}
-
-.login-btn {
-  background-color: #667eea;
-  color: white;
-  border: none;
-  padding: 12px;
-  border-radius: 6px;
-  font-size: 16px;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.login-btn:hover {
-  background-color: #5a6fd8;
-}
-
-.login-demo-note {
-  text-align: center;
-  margin-top: 1rem;
-  font-size: 12px;
-  color: #666;
-}
-
-/* Header Styles */
-.app-header {
-  background: white;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  border-bottom: 1px solid #e0e0e0;
-}
-
-.header-content {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 1rem 2rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.app-title {
-  color: #333;
-  font-size: 1.5rem;
-  margin: 0;
-}
-
-.header-right {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.user-welcome {
-  color: #666;
-  font-size: 14px;
-}
-
-.logout-btn {
-  background-color: #dc3545;
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 14px;
-  transition: background-color 0.2s;
-}
-
-.logout-btn:hover {
-  background-color: #c82333;
-}
-
-/* Main Content */
-.main-content {
-  min-height: calc(100vh - 120px);
-  background-color: #f8f9fa;
-}
-
-.nav-tabs {
-  display: flex;
-  justify-content: center;
-  border-bottom: 2px solid #ccc;
-  margin-bottom: 0;
-  background-color: #f8f8f8;
-  padding: 0.5rem;
-  font-family: Arial, sans-serif;
-}
-
-.tab-link {
-  padding: 10px 20px;
-  text-decoration: none;
-  color: #333;
-  border: 1px solid transparent;
-  border-bottom: none;
-  border-radius: 8px 8px 0 0;
-  margin: 0 5px;
-  background-color: #e0e0e0;
-  transition: background-color 0.2s ease;
-}
-
-.tab-link:hover {
-  background-color: #d0d0d0;
-}
-
-.tab-link.active {
-  background-color: #ffffff;
-  border: 1px solid #ccc;
-  border-bottom: 2px solid white;
-  color: #000;
-  font-weight: bold;
-}
+/* need to take stuff from App.css and old App.css in work here */
 
 .form-box {
   background: #fefefe;
@@ -209,6 +10,7 @@
   flex-direction: column;
 }
 
+/*Dont think this is used anywhere*/
 .chart-box {
   background: #fefefe;
   padding: 1.5rem;
@@ -217,7 +19,7 @@
   align-self: center;
 }
 
-fieldset {
+.DA-field {
   margin-top: 1.5rem;
   padding: 1rem;
   border: 1px solid #ddd;
@@ -225,44 +27,34 @@ fieldset {
   background: #fafafa;
 }
 
-.center-container {
+.DA-center-container {
   display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: column;
 }
 
-input[type="text"],
-input[type="email"],
-input[type="tel"],
-input[type="date"],
-input[type="password"] {
-  width: 80%;
-  padding: 8px;
-  margin-bottom: 0.8rem;
-  border-radius: 21px;
-  border: 1px solid #ccc;
-}
-
-button {
+.preset-btn, .calculate-btn, .reset-form-btn {
   padding: 0.5rem 1rem;
   margin-right: 1rem;
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  color: white;
 }
-
-.submit-btn {
+.preset-btn {
   background-color: #007bff;
-  color: white;
 }
 
-.reset-btn {
+.calculate-btn {
+  background-color: #007bff;
+}
+
+.reset-form-btn {
   background-color: #6c757d;
-  color: white;
 }
 
-.label {
+.DA-label {
   margin-top: 2rem;
   font-size: 18px;
   font-weight: 500;
@@ -270,19 +62,20 @@ button {
   text-align: center;
 }
 
-.Box1Label {
-  margin-top: 1rem;
-  font-size: 18px;
-  font-weight: bold;
-  display: block;
-  margin-bottom: 8px;
-}
-
-small {
+.DA-small {
   font-size: 14px;
   display: block;
   text-align: center;
 }
+
+.DA-input {
+  width: 80%;
+  padding: 8px;
+  margin-bottom: 0.8rem;
+  border-radius: 21px;
+  border: 1px solid #ccc;
+}
+
 
 /* Analysis Styles */
 .analysis-summary {
@@ -427,67 +220,6 @@ small {
   color: #555;
 }
 
-/* Employee Table Styles */
-.employee-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 1rem;
-}
-
-.employee-table th,
-.employee-table td {
-  padding: 12px;
-  text-align: left;
-  border-bottom: 1px solid #ddd;
-}
-
-.employee-table th {
-  background-color: #f8f9fa;
-  font-weight: bold;
-  color: #333;
-}
-
-.employee-table tr:hover {
-  background-color: #f5f5f5;
-}
-
-.role-badge {
-  background-color: #e9ecef;
-  color: #495057;
-  padding: 4px 8px;
-  border-radius: 12px;
-  font-size: 0.8rem;
-  font-weight: 500;
-}
-
-/* Loading and Error Styles */
-.loading-spinner {
-  width: 40px;
-  height: 40px;
-  border: 4px solid #f3f3f3;
-  border-top: 4px solid #007bff;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin: 0 auto 1rem;
-}
-
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
-.error-message {
-  background-color: #f8d7da;
-  border: 1px solid #f5c6cb;
-  color: #721c24;
-  padding: 1rem;
-  border-radius: 8px;
-  text-align: center;
-}
 
 /* FULLY CUSTOM SLIDER STYLING */
 input[type="range"].custom-slider {
@@ -562,17 +294,6 @@ input[type="range"].custom-slider:hover::-moz-range-thumb {
     padding: 1rem;
     flex-direction: column;
     gap: 1rem;
-  }
-
-  .nav-tabs {
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .tab-link {
-    margin: 2px 0;
-    width: 200px;
-    text-align: center;
   }
 
   .summary-grid {

@@ -1,0 +1,209 @@
+.client-add-container {
+  padding: 30px 50px;
+  max-width: 100%;
+  margin: auto;
+  font-family: Arial, sans-serif;
+}
+
+header {
+  text-align: left;
+  margin-bottom: 10px;
+  font-size: 20px;
+}
+
+header h1 {
+  margin: 0
+}
+
+header p {
+  margin-top: 5px;
+  font-size: 24px;
+  color: rgb(134, 134, 134);
+  margin-bottom: 30px;
+}
+
+/* Encapsulated form box */
+.form-wrapper {
+  background-color: #e8eaf6;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  border: 1px solid #e5e7eb;
+  overflow: hidden;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Tabs inside the form box */
+.client-add-nav {
+  display: flex;
+  justify-content: space-evenly;
+  background-color: #c3c9f0;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 5px;
+  width: 60%;
+  margin: 0 auto 40px auto;
+  gap: 20px;
+}
+
+.client-add-tab {
+  font-size: 18px;
+  border: 1px solid #c3c9f0;
+  cursor: pointer;
+  flex: 1;
+  text-align: center;
+  transition: all 0.3s ease;
+  font-weight: bold;
+  color: #384064;
+  border-radius: 5px;
+  background: none;
+  padding: 8px;
+}
+
+.client-add-tab:hover {
+  color: #374151;
+  background-color: #d6daee;
+  border: 1px solid #bbc2f1;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
+}
+
+.client-add-tab.active {
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
+  border: 1px solid #ddd;
+  background-color: #ffffff;
+  color: #1a3094;
+}
+
+/* Form section grid layout */
+.form-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 40px;
+  justify-content: center;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+/* half-width field*/
+.form-group {
+  display: flex;
+  flex-direction: column;
+  flex: 0 1 calc(50% - 20px); /*its minus 1/2 the gap of form-grid*/
+  min-width: 40%;
+  max-width: 50%;
+  box-sizing: border-box;
+  margin-top: 5px;
+}
+
+.form-input {
+  padding: 10px;
+  font-size: 20px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+}
+
+/* Total Savings + Debt in single field line */
+.inline-double {
+  display: flex;
+  gap: 30px;
+  flex: 1 1 100%;
+  box-sizing: border-box;
+}
+
+.inline-double .half-field {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  max-width: 50%;
+}
+
+.form-group .form-label {
+  font-weight: bold;
+  font-size: 18px;
+  margin-bottom: 5px;
+}
+
+/*full-width fields */
+.full-width {
+  max-width: 100%;
+  flex: 0 0 100%;
+  display: block;
+}
+
+.full-width .form-label {
+  font-weight: bold;
+  text-align: center;
+  font-size: 18px;
+}
+
+.full-width .form-input {
+  margin-top: 9px;
+}
+
+.textarea-resizable {
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+  min-height: 80px;   
+  max-height: 120px;
+  resize: vertical;
+  overflow: auto;
+}
+
+
+.form-actions {
+  margin-top: 50px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 15px;
+}
+
+.cancel-button,
+.save-button {
+  background: #999999;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
+  border: 1px solid #ddd;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.cancel-button:hover {
+  background-color: #ca0e0e;
+}
+
+.save-button {
+  background: #28a745;
+}
+
+.save-button:hover {
+  background-color: #31c754;
+}
+
+.input-with-prefix {
+  position: relative;
+}
+
+.input-with-prefix .dollarSign-prefix {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-weight: bold;
+  color: #333;
+}
+
+.input-with-prefix .form-input {
+  padding-left: 25px; /* space for the $ symbol */
+}
