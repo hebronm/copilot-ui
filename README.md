@@ -105,7 +105,12 @@ npm install @mui/material @emotion/react @emotion/styled @mui/icons-material @mu
 ```
 npm install recharts
 ```
-8. To start the application, run the following command:
+
+8. Run the following command to install the recharts library:
+```
+npm install react-icons
+```
+9. To start the application, run the following command:
 ```
 npm start
 ```
