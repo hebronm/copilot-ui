@@ -10,6 +10,7 @@
   flex-direction: column;
 }
 
+/*Dont think this is used anywhere*/
 .chart-box {
   background: #fefefe;
   padding: 1.5rem;
@@ -18,8 +19,7 @@
   align-self: center;
 }
 
-/*aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa*/
-fieldset {
+.DA-field {
   margin-top: 1.5rem;
   padding: 1rem;
   border: 1px solid #ddd;
@@ -27,28 +27,34 @@ fieldset {
   background: #fafafa;
 }
 
-/* rename */
-.center-container {
+.DA-center-container {
   display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: column;
 }
 
-/* rename this something else*/
-.submit-btn {
+.preset-btn, .calculate-btn, .reset-form-btn {
+  padding: 0.5rem 1rem;
+  margin-right: 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  color: white;
+}
+.preset-btn {
   background-color: #007bff;
-  color: white;
 }
 
-/* rename*/
-.reset-btn {
+.calculate-btn {
+  background-color: #007bff;
+}
+
+.reset-form-btn {
   background-color: #6c757d;
-  color: white;
 }
 
-/* important to rename this!!*/
-.label {
+.DA-label {
   margin-top: 2rem;
   font-size: 18px;
   font-weight: 500;
@@ -56,13 +62,19 @@ fieldset {
   text-align: center;
 }
 
-/*aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa*/
-small {
+.DA-small {
   font-size: 14px;
   display: block;
   text-align: center;
 }
 
+.DA-input {
+  width: 80%;
+  padding: 8px;
+  margin-bottom: 0.8rem;
+  border-radius: 21px;
+  border: 1px solid #ccc;
+}
 
 
 /* Analysis Styles */

@@ -326,10 +326,10 @@ function DataAnalysis() {
           Based on real-world contribution limits and tax optimization strategies
         </p>
 
-        <fieldset>
+        <fieldset className="DA-field">
           <h2 style={{ textAlign: "center" }}>Basic Parameters</h2>
-          <div className="center-container">
-            <label className="label">
+          <div className="DA-center-container">
+            <label className="DA-label">
               Current Age: <b>{currentAge}</b>
             </label>
             <input
@@ -342,7 +342,7 @@ function DataAnalysis() {
               style={getSliderTrackStyle(currentAge, 18, 70)}
             />
 
-            <label className="label">
+            <label className="DA-label">
               Retirement Age: <b>{retirementAge}</b>
             </label>
             <input
@@ -355,7 +355,7 @@ function DataAnalysis() {
               style={getSliderTrackStyle(retirementAge, currentAge + 1, 85)}
             />
 
-            <label className="label">
+            <label className="DA-label">
               Expected Annual Return: <b>{expectedReturn}%</b>
             </label>
             <input
@@ -369,7 +369,7 @@ function DataAnalysis() {
               style={getSliderTrackStyle(expectedReturn, 3, 12)}
             />
 
-            <label className="label">
+            <label className="DA-label">
               Starting Balance: <b>${startingBalance.toLocaleString()}</b>
             </label>
             <input
@@ -386,7 +386,7 @@ function DataAnalysis() {
         </fieldset>
 
         {/* Preset Scenarios */}
-        <fieldset>
+        <fieldset className="DA-field">
           <h2 style={{ textAlign: "center" }}>Quick Test Scenarios</h2>
           <div
             style={{
@@ -397,7 +397,7 @@ function DataAnalysis() {
             }}
           >
             <button
-              className="submit-btn"
+              className="preset-btn"
               onClick={() => {
                 setCurrentAge(30)
                 setRetirementAge(65)
@@ -415,11 +415,11 @@ function DataAnalysis() {
             >
               📊 Default Scenario
               <br />
-              <small>Traditional usually wins</small>
+              <small className="DA-small">Traditional usually wins</small>
             </button>
 
             <button
-              className="submit-btn"
+              className="preset-btn"
               onClick={() => {
                 setCurrentAge(25)
                 setRetirementAge(67)
@@ -436,11 +436,11 @@ function DataAnalysis() {
             >
               🚀 Career Growth
               <br />
-              <small>Switching strategy wins</small>
+              <small className="DA-small">Switching strategy wins</small>
             </button>
 
             <button
-              className="submit-btn"
+              className="preset-btn"
               onClick={() => {
                 setCurrentAge(28)
                 setRetirementAge(65)
@@ -457,11 +457,11 @@ function DataAnalysis() {
             >
               💰 High Retirement Income
               <br />
-              <small>Roth strategy wins</small>
+              <small className="DA-small">Roth strategy wins</small>
             </button>
 
             <button
-              className="submit-btn"
+              className="preset-btn"
               onClick={() => {
                 setCurrentAge(22)
                 setRetirementAge(65)
@@ -478,11 +478,11 @@ function DataAnalysis() {
             >
               🎓 Young Professional
               <br />
-              <small>Dramatic income growth</small>
+              <small className="DA-small">Dramatic income growth</small>
             </button>
 
             <button
-              className="submit-btn"
+              className="preset-btn"
               onClick={() => {
                 setCurrentAge(40)
                 setRetirementAge(70)
@@ -499,7 +499,7 @@ function DataAnalysis() {
             >
               🏢 High Earner
               <br />
-              <small>Late starter, high income</small>
+              <small className="DA-small">Late starter, high income</small>
             </button>
           </div>
           <div style={{ textAlign: "center", padding: "1rem", backgroundColor: "#f0f8ff", borderRadius: "8px" }}>
@@ -514,7 +514,7 @@ function DataAnalysis() {
 
         {/* Tax Brackets Section */}
         <div className="form-box">
-          <fieldset>
+          <fieldset className="DA-field">
             <h2 style={{ textAlign: "center" }}>Tax Brackets 2024 (Change for Custom)</h2>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 50px", gap: "0.5rem", alignItems: "center" }}>
               <label><b>Min</b></label>
@@ -535,6 +535,7 @@ function DataAnalysis() {
                       type="number"
                       value={min}
                       readOnly
+                      className="DA-input"
                     />
 
                      {/* Max: editable except last one */}
@@ -543,6 +544,7 @@ function DataAnalysis() {
                         type="text"
                         value="∞"
                         readOnly
+                        className="DA-input"
                         style={{ textAlign: "center" }}
                         title="Last bracket max is infinite"
                       />
@@ -550,6 +552,7 @@ function DataAnalysis() {
                       <input
                         type="number"
                         value={max}
+                        className="DA-input"
                         onChange={(e) => {
                           const updated = [...myBracket];
                           updated[i][0] = Number(e.target.value);
@@ -563,6 +566,7 @@ function DataAnalysis() {
                       type="number"
                       step="0.01"
                       value={rate}
+                      className="DA-input"
                       onChange={(e) => {
                         const updated = [...myBracket];
                         updated[i][1] = Number(e.target.value);
@@ -610,10 +614,10 @@ function DataAnalysis() {
 
 
         {/* Retirement Income Planning */}
-        <fieldset>
+        <fieldset className="DA-field">
           <h2 style={{ textAlign: "center" }}>Retirement Income Planning</h2>
-          <div className="center-container">
-            <label className="label">
+          <div className="DA-center-container">
+            <label className="DA-label">
               Desired Annual Retirement Income: <b>${desiredRetirementIncome.toLocaleString()}</b>
             </label>
             <input
@@ -626,9 +630,9 @@ function DataAnalysis() {
               className="custom-slider"
               style={getSliderTrackStyle(desiredRetirementIncome, 30000, 150000)}
             />
-            <small>How much you want to withdraw from IRAs annually</small>
+            <small className="DA-small">How much you want to withdraw from IRAs annually</small>
 
-            <label className="label">
+            <label className="DA-label">
               Expected Social Security: <b>${socialSecurityIncome.toLocaleString()}</b>
             </label>
             <input
@@ -642,7 +646,7 @@ function DataAnalysis() {
               style={getSliderTrackStyle(socialSecurityIncome, 0, 50000)}
             />
 
-            <label className="label">
+            <label className="DA-label">
               Other Retirement Income: <b>${otherRetirementIncome.toLocaleString()}</b>
             </label>
             <input
@@ -655,12 +659,12 @@ function DataAnalysis() {
               className="custom-slider"
               style={getSliderTrackStyle(otherRetirementIncome, 0, 30000)}
             />
-            <small>Pensions, part-time work, investment income</small>
+            <small className="DA-small">Pensions, part-time work, investment income</small>
 
             <div style={{ marginTop: "1rem", padding: "1rem", backgroundColor: "#e3f2fd", borderRadius: "8px" }}>
               <strong>Calculated Retirement Tax Rate: {retirementTaxRate}%</strong>
               <br />
-              <small>
+              <small className="DA-small">
                 Based on total retirement income of $
                 {/*Social Security Income is taxed only up to 85%*/}
                 {(desiredRetirementIncome + socialSecurityIncome * 0.85 + otherRetirementIncome).toLocaleString()}
@@ -670,7 +674,7 @@ function DataAnalysis() {
         </fieldset>
 
         {/* Income and Contribution Input Method */}
-        <fieldset>
+        <fieldset className="DA-field">
           <h2 style={{ textAlign: "center" }}>Career Income & Contribution Data</h2>
           <div style={{ textAlign: "center", marginBottom: "1rem" }}>
             <label style={{ marginRight: "1rem" }}>
@@ -694,8 +698,8 @@ function DataAnalysis() {
           </div>
 
           {!useYearByYear ? (
-            <div className="center-container">
-              <label className="label">
+            <div className="DA-center-container">
+              <label className="DA-label">
                 Current Annual Salary: <b>${simpleIncome.toLocaleString()}</b>
               </label>
               <input
@@ -708,9 +712,9 @@ function DataAnalysis() {
                 className="custom-slider"
                 style={getSliderTrackStyle(simpleIncome, 30000, 200000)}
               />
-              <small>Current tax bracket: {calculateRelativeTaxPercentage(myBracket, simpleIncome)}%</small>
+              <small className="DA-small">Current tax bracket: {calculateRelativeTaxPercentage(myBracket, simpleIncome)}%</small>
 
-              <label className="label">
+              <label className="DA-label">
                 Monthly IRA Contribution: <b>${simpleContribution.toLocaleString()}</b>
               </label>
               <input
@@ -723,9 +727,9 @@ function DataAnalysis() {
                 className="custom-slider"
                 style={getSliderTrackStyle(simpleContribution, 100, 700)}
               />
-              <small>2024 IRA limit: $7,000/year ($583/month), $8,000 if 50+ ($667/month)</small>
+              <small className="DA-small">2024 IRA limit: $7,000/year ($583/month), $8,000 if 50+ ($667/month)</small>
 
-              <label className="label">
+              <label className="DA-label">
                 Annual Salary Growth: <b>{salaryGrowthRate}%</b>
               </label>
               <input
@@ -758,6 +762,7 @@ function DataAnalysis() {
                         <input
                           type="number"
                           value={Math.round(yearData.salary)}
+                          className="DA-input"
                           onChange={(e) => updateYearData(index, "salary", e.target.value)}
                           style={{ width: "100px", padding: "2px" }}
                         />
@@ -766,6 +771,7 @@ function DataAnalysis() {
                         <input
                           type="number"
                           value={Math.round(yearData.contribution)}
+                          className="DA-input"
                           onChange={(e) => updateYearData(index, "contribution", e.target.value)}
                           style={{ width: "80px", padding: "2px" }}
                         />
@@ -780,10 +786,10 @@ function DataAnalysis() {
         </fieldset>
 
         <div style={{ marginTop: "1rem", textAlign: "center" }}>
-          <button type="button" className="submit-btn">
+          <button type="button" className="calculate-btn">
             Calculate Optimal Strategy
           </button>
-          <button type="button" className="reset-btn" onClick={resetForm}>
+          <button type="button" className="reset-form-btn" onClick={resetForm}>
             Reset Form
           </button>
         </div>
@@ -818,7 +824,7 @@ function DataAnalysis() {
       {/* Account Growth Chart */}
       <div className="form-box" style={{ marginTop: "2rem" }}>
         <h3 style={{ textAlign: "center" }}>Strategy Comparison (After-Tax Values)</h3>
-        <fieldset>
+        <fieldset className="DA-field">
           <div style={{ height: "400px", width: "100%" }}>
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={analysis.yearlyData}>
@@ -854,7 +860,7 @@ function DataAnalysis() {
       {/* Growth of Switching only */}
       <div className="form-box" style={{ marginTop: "2rem" }}>
         <h3 style={{ textAlign: "center" }}>Switching Strategy Breakdown</h3>
-        <fieldset>
+        <fieldset className="DA-field">
           <div style={{ height: "400px", width: "100%" }}>
             <ResponsiveContainer width="100%" height={300}>
               <LineChart
@@ -896,7 +902,7 @@ function DataAnalysis() {
       {/* Tax Bracket and Salary Growth Chart */}
       <div className="form-box" style={{ marginTop: "2rem" }}>
         <h3 style={{ textAlign: "center" }}>Salary Growth & Tax Bracket Progression</h3>
-        <fieldset>
+        <fieldset className="DA-field">
           <div style={{ height: "400px", width: "100%" }}>
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={analysis.yearlyData}>
@@ -956,7 +962,7 @@ function DataAnalysis() {
       {/* Switching Strategy Visualization */}
       <div className="form-box" style={{ marginTop: "2rem" }}>
         <h3 style={{ textAlign: "center" }}>Switching Strategy Timeline</h3>
-        <fieldset>
+        <fieldset className="DA-field">
           <div style={{ height: "300px", width: "100%" }}>
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={analysis.yearlyData} margin={{ top: 20, right: 30, left: 20, bottom: 0 }}>
