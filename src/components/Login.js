@@ -1,9 +1,20 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "../CSS_Files/Login.css";
 
 function Login({ onLogin }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+
+  //Disable scrolling when login mounts
+  useEffect(() => {
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      //Restore scrolling when login unmounts
+      document.body.style.overflow = originalOverflow;
+    };
+  }, []);
 
   const handleSubmit = (e) => {
     e.preventDefault();

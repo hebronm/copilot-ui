@@ -71,8 +71,17 @@ function Navigation({ currentUser, onLogout }) {
 }
 
 function App() {
+  return (
+    <Router>
+      <MainApp />
+    </Router>
+  );
+}
+
+function MainApp() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [currentUser, setCurrentUser] = useState("")
+  const navigate = useNavigate();
 
   useEffect(() => {
     const savedUser = localStorage.getItem("currentUser")
@@ -86,9 +95,13 @@ function App() {
     setIsLoggedIn(true)
     setCurrentUser(username)
     localStorage.setItem("currentUser", username)
+
+    //redirect to dash immediately
+    navigate("/");
   }
 
   const handleLogout = () => {
+    navigate("/"); //to clear the address bar
     setIsLoggedIn(false)
     setCurrentUser("")
     localStorage.removeItem("currentUser")
@@ -99,23 +112,21 @@ function App() {
   }
 
   return (
-    <Router>
-      <div className="App">
-        <Navigation currentUser={currentUser} onLogout={handleLogout} />
-        <div className="main-content">
-          <Routes>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/client/:id" element={<ClientDetail />} />
-            <Route path="/newClient" element={<ClientAdd />} />
-            <Route path="/iraCalculator" element={<IRACalculator />} /> 
-            <Route path="/analysis" element={<DataAnalysis />} />
-            <Route path="/table" element={<EmployeeTable />} />
-            <Route path="/clientTable" element={<ClientTable />} />
-            <Route path="/FAQ" element={<FAQ />} />
-          </Routes>
-        </div>
+    <div className="App">
+      <Navigation currentUser={currentUser} onLogout={handleLogout} />
+      <div className="main-content">
+        <Routes>
+          <Route path="/" element={<Dashboard />} />
+          <Route path="/client/:id" element={<ClientDetail />} />
+          <Route path="/newClient" element={<ClientAdd />} />
+          <Route path="/iraCalculator" element={<IRACalculator />} /> 
+          <Route path="/analysis" element={<DataAnalysis />} />
+          <Route path="/table" element={<EmployeeTable />} />
+          <Route path="/clientTable" element={<ClientTable />} />
+          <Route path="/FAQ" element={<FAQ />} />
+        </Routes>
       </div>
-    </Router>
+    </div>
   )
 }
 
