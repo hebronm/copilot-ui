@@ -49,6 +49,11 @@ export const taxes2024 = [
 //create a section for tax bracket ranges and default it ot taxes2024
 //save it in a variable just like the rest (currentAge, startingSalary, etc.)
 
+/* Needed this b/c "cant build b/c no unused vars"*/
+void calculateNetSalary;
+/*Delete this when you need to use it */
+
+
 
 // Calculate realistic retirement tax rate based on withdrawal amount
 function calculateRetirementTaxRate(annualWithdrawal, socialSecurity = 20000, otherIncome = 5000) {

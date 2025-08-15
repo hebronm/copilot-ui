@@ -112,7 +112,7 @@ function Dashboard() {
     clientsList.forEach(client => {
       if (!client.birthdate) return; //skip if no birthdate
 
-      const [year, month, day] = client.birthdate.split("-").map(Number);
+      const [, month, day] = client.birthdate.split("-").map(Number);
 
       //Create this year's birthday
       let nextBirthday = new Date(today.getFullYear(), month - 1, day);
