@@ -122,7 +122,7 @@ function ClientDetail() {
         )}
         
         {activeTab !== 'Overview' && activeTab !== 'Calculators' && (
-          <p>{activeTab} content goes here (placeholder)</p>
+          <p>{activeTab} content will eventually be here. Stay up to date with us!</p>
         )}
       </div>
     </div>

@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import '../CSS_Files/Dashboard.css';
 import { useNavigate } from 'react-router-dom';
 
+import { FaUser, FaPiggyBank, FaMoneyBillWave, FaBirthdayCake } from "react-icons/fa";
+
 
 function Dashboard() {
   const navigate = useNavigate()
@@ -14,6 +16,8 @@ function Dashboard() {
   */
    
   const [clients, setClients] = useState([]);
+  const [upcomingBirthday, setUpcomingBirthday] = useState("N/A");
+  const [upcomingBirthdayName, setUpcomingBirthdayName] = useState("");
 
   useEffect(() => {
     fetch("http://34.217.130.235:8080/clients")
@@ -25,6 +29,7 @@ function Dashboard() {
         // If backend wraps payload under _embedded.clientList
         const list = json?._embedded?.clientList || json || [];
         setClients(list);
+        findUpcomingBirthday(list);
       })
       .catch(err => {
         console.error("Failed to fetch clients:", err);
@@ -36,7 +41,6 @@ function Dashboard() {
   }
 
   const handleDeleteClick = (clientId) => {
-    //TODO: implement deletion here
     console.log("Delete clicked for client id:", clientId);
 
     //confirm prompt user
@@ -67,6 +71,77 @@ function Dashboard() {
     navigate('/newClient');
   };
 
+  /* calculations for the top boxes */
+  const totalClients = clients.length;
+
+  const totalAssets = clients.reduce((sum, c) => {
+    const assets = (c.totalSavings || 0) + (c.rothIRABalance || 0) + (c.traditionalIRABalance || 0);
+    const debt = c.totalDebt || 0;
+    return sum + (assets - debt);
+  }, 0);
+
+
+
+  // Average income (use first entry if it's an array)
+  const avgIncome =
+    clients.length > 0
+      ? clients.reduce((sum, c) => {
+          const first = Array.isArray(c.annualIncome)
+            ? c.annualIncome[0]
+            : c.annualIncome;
+          const n = Number(first);
+          return sum + (Number.isFinite(n) ? n : 0);
+        }, 0) / clients.length
+      : 0;
+
+  //Format w/ 2 dec place and commas
+  const avgIncomeDisplay = `$${(
+    Math.round(avgIncome * 100) / 100
+  ).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+
+  
+  //find upcoming b-day
+  const findUpcomingBirthday = (clientsList) => {
+    if (!clientsList.length) return;
+
+    const today = new Date();
+    let soonestClient = null;
+    let soonestDate = null;
+
+    clientsList.forEach(client => {
+      if (!client.birthdate) return; //skip if no birthdate
+
+      const [year, month, day] = client.birthdate.split("-").map(Number);
+
+      //Create this year's birthday
+      let nextBirthday = new Date(today.getFullYear(), month - 1, day);
+
+      //if birthday has already passed this year, roll over to next year
+      if (nextBirthday < today) {
+        nextBirthday.setFullYear(today.getFullYear() + 1);
+      }
+
+      //Compare & find closest
+      if (
+        soonestDate === null ||
+        nextBirthday < soonestDate
+      ) {
+        soonestDate = nextBirthday;
+        soonestClient = client;
+      }
+    });
+
+    if (soonestDate && soonestClient) {
+      // format MM/DD/YYYY
+      const formattedDate = `${String(soonestDate.getMonth() + 1).padStart(2, "0")}/${String(soonestDate.getDate()).padStart(2, "0")}/${soonestDate.getFullYear()}`;
+      setUpcomingBirthday(formattedDate);
+
+      //set fullname
+      setUpcomingBirthdayName(`${soonestClient.firstName} ${soonestClient.lastName}`);
+    }
+  };
+
 
   return (
     <div className="dashboard">
@@ -76,23 +151,55 @@ function Dashboard() {
         <p>Welcome back! Here's an overview of your client portfolio.</p>
       </header>
 
-      {/* Top Boxes */}
-
-      {/*Need to work on this properly later on
-      Show: 
+      {/*
+      Top boxes Show: 
       - Total Clients
       - Assets Under Management
       - 2 other free boxes (Real Estate Investment, Retirement Accts)
-      - Maybe avg age and avg income or maybe upcoming birthdays
+      - Maybe avg age and avg income or maybe upcoming birthdays temporarily
        */}
 
+      {/* Top Boxes */}
       <div className="top-boxes">
-        {[1, 2, 3, 4].map((num) => (
-          <div key={num} className="top-box">
-            {num}
+        {/* Box 1 */}
+        <div className="top-box">
+          <div className="box-header">
+            <span>Total Clients</span>
+            <FaUser />
           </div>
-        ))}
+          <div className="box-value">{totalClients}</div>
+        </div>
+
+        {/* Box 2 */}
+        <div className="top-box">
+          <div className="box-header">
+            <span>Assets Under Management</span>
+            <FaPiggyBank />
+          </div>
+          <div className="box-value">${totalAssets.toLocaleString()}</div>
+        </div>
+
+        {/* Box 3 */}
+        <div className="top-box">
+          <div className="box-header">
+            <span>Average Income</span>
+            <FaMoneyBillWave />
+          </div>
+          <div className="box-value">{avgIncomeDisplay}</div>
+          {/*<small className="box-note">Box may change in future update</small>*/}
+        </div>
+
+        {/* Box 4 */}
+        <div className="top-box">
+          <div className="box-header">
+            <span>Upcoming Birthday</span>
+            <FaBirthdayCake />
+          </div>
+          <div className="box-value">{upcomingBirthday}</div>
+          <small className="box-note">{upcomingBirthdayName}</small>
+        </div>
       </div>
+
 
       {/* Clients Section */}
       <div className="clients-section">
@@ -105,7 +212,7 @@ function Dashboard() {
 
         <table className="clients-table">
             
-            {/*Need to rework the spacing of the table */}
+            {/*TODO: see if can rework the spacing of the table */}
 
           <thead>
             <tr>
