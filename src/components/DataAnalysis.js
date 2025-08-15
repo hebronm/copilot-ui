@@ -290,6 +290,11 @@ function DataAnalysis() {
     simpleContribution,
     salaryGrowthRate,
     yearByYearData,
+    myBracket, //Added this b/c error was getting picked up
+
+    /*
+    Line 282:6:   React Hook useMemo has a missing dependency: 'myBracket'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+    */ 
     
     //Don't need?
 
