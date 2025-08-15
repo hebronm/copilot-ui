@@ -208,7 +208,7 @@ function DataAnalysis() {
         }
       } else {
         // Year 0 - set initial strategy
-        if(optimalStrategy == "Roth"){
+        if(optimalStrategy === "Roth"){ // changed this b/c error: Line 211:28:  Expected '===' and instead saw '=='
           scenarios.switching.rothBalance = startingBalance;
         } else {
           scenarios.switching.traditionalBalance = startingBalance;
