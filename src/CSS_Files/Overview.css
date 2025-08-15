@@ -11,10 +11,10 @@
 
 .stat-box {
   flex: 1;
-  background-color: #f0f0f0;
+  background-color: #fdfeff;
   box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
   border: 1px solid #ddd;
-  padding: 15px;
+  padding: 5px;
   text-align: center;
   border-radius: 8px;
 }
@@ -85,8 +85,10 @@
 
 .overview-label {
   flex: 1;
+  margin-top: 2rem;
   font-weight: bold;
   font-size: 20px;
+  display: block;
   text-align: left;
   color: #868686;
   max-width: 250px; /* optional: controls label width */

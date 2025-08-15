@@ -12,6 +12,7 @@ header {
 }
 
 header h1 {
+  margin-top: 10px;
   margin-bottom: 0;
 }
 
@@ -24,7 +25,7 @@ header p {
 
 /* Encapsulated form box */
 .form-wrapper {
-  background-color: #ececec;
+  background-color: #e8eaf6;
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
@@ -47,7 +48,7 @@ header p {
   padding: 8px;
   width: 60%;
   margin: 0 auto 20px auto;
-  gap: 10px;
+  gap: 20px;
 }
 
 .client-add-tab {
@@ -61,23 +62,22 @@ header p {
   color: #384064;
   border-radius: 5px;
   background: none;
-  padding: 5px;
+  padding: 8px;
 }
 
 .client-add-tab:hover {
   color: #374151;
   background-color: #d6daee;
   border: 1px solid #bbc2f1;
-  box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
 }
 
 .client-add-tab.active {
-  box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
   border: 1px solid #ddd;
   background-color: #ffffff;
   color: #1a3094;
 }
-
 
 /* Form section grid layout */
 .form-grid {
