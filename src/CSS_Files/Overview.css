@@ -83,7 +83,7 @@
   /* border-bottom: 1px solid #eee; */
 }
 
-.label {
+.overview-label {
   flex: 1;
   font-weight: bold;
   font-size: 20px;

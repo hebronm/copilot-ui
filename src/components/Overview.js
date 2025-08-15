@@ -117,7 +117,7 @@ function Overview({ client }) {
           <ul>
             {Object.entries(personalInfo).map(([label, value]) => (
               <li key={label}>
-                <span className="label">{formatLabel(label)}:</span>
+                <span className="overview-label">{formatLabel(label)}:</span>
                 <span className="value">{value}</span>
               </li>
             ))}
@@ -130,7 +130,7 @@ function Overview({ client }) {
           <ul>
             {Object.entries(financialSummary).map(([label, value]) => (
               <li key={label}>
-                <span className="label">{formatLabel(label)}:</span>
+                <span className="overview-label">{formatLabel(label)}:</span>
                 <span className="value">{value}</span >
               </li>
             ))}

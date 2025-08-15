@@ -1,4 +1,5 @@
 "use client"
+import "../CSS_Files/DataAnalysis.css"
 import { calculateNetSalary, calculateRelativeTaxPercentage } from './functions.js'
 import React, { useState, useMemo } from "react"
 import {

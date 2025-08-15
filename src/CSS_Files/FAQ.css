@@ -1,1 +1,55 @@
 /* Wip need to figure out what entries it even needs first from App.css*/
+
+.faq-formbox {
+  background: #fefefe;
+  padding: 1.5rem;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  min-width: 33%;
+  display: flex;
+  flex-direction: column;
+  margin-top: 2rem;
+}
+
+.faqField {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  background: #fafafa;
+}
+
+.faq-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+/*"responsive design?" test this ---------------------------------------------------------------------------------------------------------------------------------*/
+.faq-grid {
+    grid-template-columns: 1fr;
+}
+
+.faq-section {
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.faq-section h4 {
+  color: #333;
+  margin-bottom: 1rem;
+  border-bottom: 2px solid #007bff;
+  padding-bottom: 0.5rem;
+}
+
+.faq-section ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.faq-section li {
+  padding: 0.25rem 0;
+  color: #555;
+}

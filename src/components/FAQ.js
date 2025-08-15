@@ -16,9 +16,9 @@ function FAQ() {
     return (
         <div style={{ padding: "2rem", maxWidth: "1200px", margin: "auto" }}>
             {/* Retirement Tax Rate Explanation */}
-            <div className="form-box" style={{ marginTop: "2rem" }}>
+            <div className="faq-formbox">
                 <h3 style={{ textAlign: "center" }}>Understanding Retirement Tax Rate</h3>
-                <fieldset>
+                <fieldset className="faqField">
                     <div style={{ padding: "1rem", backgroundColor: "#fff3e0", borderRadius: "8px" }}>
                         <h4>What is "Retirement Tax Rate"?</h4>
                         <p>
@@ -70,11 +70,11 @@ function FAQ() {
             </div>
 
             {/* Strategy Comparison Explanation */}
-            <div className="form-box" style={{ marginTop: "2rem" }}>
+            <div className="faq-formbox">
                 <h3 style={{ textAlign: "center" }}>Strategy Comparison: What's the Difference?</h3>
-                <fieldset>
-                <div className="recommendation-grid">
-                    <div className="recommendation-section">
+                <fieldset className="faqField">
+                <div className="faq-grid">
+                    <div className="faq-section">
                     <h4 style={{ color: "#FF5733" }}>🔄 Switching Strategy</h4>
                     <ul style={{ paddingLeft: "1.5rem" }}>
                         <li>
@@ -113,9 +113,9 @@ function FAQ() {
             </div>
 
             {/* Realistic Switching Thresholds Explanation */}
-            <div className="form-box" style={{ marginTop: "2rem" }}>
+            <div className="faq-formbox">
                 <h3 style={{ textAlign: "center" }}>Why Switching Rarely Happens in Real Life</h3>
-                <fieldset>
+                <fieldset className="faqField">
                 <div style={{ padding: "1rem", backgroundColor: "#fff8e1", borderRadius: "8px" }}>
                     <h4>🎯 Realistic Switching Thresholds:</h4>
                     <ul style={{ paddingLeft: "1.5rem" }}>

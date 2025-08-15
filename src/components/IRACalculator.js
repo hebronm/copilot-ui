@@ -3,6 +3,8 @@
 import { useState, useMemo } from "react"
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts"
 
+import "../CSS_Files/IRACalculator.css"
+
 function getSliderTrackStyle(value, min = 0, max = 100) {
   const percent = ((value - min) / (max - min)) * 100
   return {
@@ -99,21 +101,22 @@ function IRACalculator() {
 
   return (
     <div style={{ padding: "2rem", maxWidth: "1200px", margin: "auto" }}>
-      <form className="form-box">
+      <form className="ira-form-box">
         <h1 style={{ textAlign: "center" }}>IRA Calculator Tool</h1>
         <br />
 
-        <fieldset className="thinFieldset">
+        <fieldset className="ira-field">
           <h2 style={{ textAlign: "center" }}>Basic Information</h2>
-          <div className="center-container">
+          <div className="ira-center-container">
             <label className="Box1Label">First Name:</label>
-            <input type="text" placeholder="John" value={firstName} onChange={(e) => setFirstName(e.target.value)} />
+            <input className="ira-input" type="text" placeholder="John" value={firstName} onChange={(e) => setFirstName(e.target.value)} />
 
             <label className="Box1Label">Last Name:</label>
-            <input type="text" placeholder="Doe" value={lastName} onChange={(e) => setLastName(e.target.value)} />
+            <input className="ira-input" type="text" placeholder="Doe" value={lastName} onChange={(e) => setLastName(e.target.value)} />
 
             <label className="Box1Label">Email:</label>
             <input
+              className="ira-input" 
               type="email"
               placeholder="JohnDoe@mail.com"
               value={email}
@@ -121,17 +124,17 @@ function IRACalculator() {
             />
 
             <label className="Box1Label">Phone Number:</label>
-            <input type="tel" placeholder="(123) 456-7890" value={phone} onChange={(e) => setPhone(e.target.value)} />
+            <input className="ira-input" type="tel" placeholder="(123) 456-7890" value={phone} onChange={(e) => setPhone(e.target.value)} />
 
             <label className="Box1Label">Birthday:</label>
-            <input type="date" value={birthday} onChange={(e) => setBirthday(e.target.value)} />
+            <input className="ira-input" type="date" value={birthday} onChange={(e) => setBirthday(e.target.value)} />
           </div>
         </fieldset>
 
-        <fieldset>
+        <fieldset className="ira-field">
           <h2 style={{ textAlign: "center" }}>Financial Information</h2>
 
-          <label className="label">
+          <label className="ira-label">
             Current Age: <b>{ageRange[0]}</b>
           </label>
           <input
@@ -144,7 +147,7 @@ function IRACalculator() {
             style={getSliderTrackStyle(ageRange[0], 18, 85)}
           />
 
-          <label className="label" style={{ marginTop: "20px" }}>
+          <label className="ira-label" style={{ marginTop: "20px" }}>
             Target Retirement Age: <b>{ageRange[1]}</b>
           </label>
           <input
@@ -156,9 +159,9 @@ function IRACalculator() {
             className="custom-slider"
             style={getSliderTrackStyle(ageRange[1], 18, 85)}
           />
-          <small>Adjust to your current age and target retirement age</small>
+          <small className="ira-note">Adjust to your current age and target retirement age</small>
 
-          <label className="label">
+          <label className="ira-label">
             Starting balance ($): <b>{startingBalance.toLocaleString()}</b>
           </label>
           <input
@@ -171,9 +174,9 @@ function IRACalculator() {
             className="custom-slider"
             style={getSliderTrackStyle(startingBalance, 0, 100000)}
           />
-          <small>${startingBalance.toLocaleString()} / $100k</small>
+          <small className="ira-note">${startingBalance.toLocaleString()} / $100k</small>
 
-          <label className="label">
+          <label className="ira-label">
             Monthly contribution ($): <b>{monthlyContribution.toLocaleString()}</b>
           </label>
           <input
@@ -185,9 +188,9 @@ function IRACalculator() {
             className="custom-slider"
             style={getSliderTrackStyle(monthlyContribution, 0, 2000)}
           />
-          <small>Note: This is the amount of "After-Tax" money you're willing to put in monthly</small>
+          <small className="ira-note">Note: This is the amount of "After-Tax" money you're willing to put in monthly</small>
 
-          <label className="label">
+          <label className="ira-label">
             Annual rate of return (%): <b>{annualReturn}</b>
           </label>
           <input
@@ -199,9 +202,9 @@ function IRACalculator() {
             className="custom-slider"
             style={getSliderTrackStyle(annualReturn, 0, 15)}
           />
-          <small>Historically, a rough estimate for 30 years would show a 10-12% return</small>
+          <small className="ira-note">Historically, a rough estimate for 30 years would show a 10-12% return</small>
 
-          <label className="label">
+          <label className="ira-label">
             Current tax rate (%): <b>{currentTaxRate}</b>
           </label>
           <input
@@ -214,7 +217,7 @@ function IRACalculator() {
             style={getSliderTrackStyle(currentTaxRate, 0, 50)}
           />
 
-          <label className="label">
+          <label className="ira-label">
             Estimated tax rate at retirement (%): <b>{retirementTaxRate}</b>
           </label>
           <input
@@ -229,18 +232,18 @@ function IRACalculator() {
         </fieldset>
 
         <div style={{ marginTop: "1rem", textAlign: "center" }}>
-          <button type="button" className="submit-btn">
+          <button type="button" className="ira-submit-btn">
             Calculate
           </button>
-          <button type="button" className="reset-btn" onClick={resetForm}>
+          <button type="button" className="ira-reset-btn" onClick={resetForm}>
             Reset Form
           </button>
         </div>
       </form>
 
-      <div className="form-box" style={{ marginTop: "2rem" }}>
+      <div className="ira-form-box" style={{ marginTop: "2rem" }}>
         <h3 style={{ textAlign: "center" }}>Estimated Account Value Graph</h3>
-        <fieldset>
+        <fieldset className="ira-field">
           <div style={{ height: "500px", width: "100%" }}>
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={chartData}>
