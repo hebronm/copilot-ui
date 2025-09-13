@@ -18,8 +18,9 @@ function Dashboard() {
   const [clients, setClients] = useState([]);
   const [upcomingBirthday, setUpcomingBirthday] = useState("N/A");
   const [upcomingBirthdayName, setUpcomingBirthdayName] = useState("");
-  const jwtToken = localStorage.getItem("jwtToken");
+
   useEffect(() => {
+    const jwtToken = localStorage.getItem("jwtToken");
     if (jwtToken) {
     fetch("http://34.217.130.235:8080/clients",
       {
@@ -71,7 +72,7 @@ function Dashboard() {
     fetch(`http://34.217.130.235:8080/clients/${clientId}`, {
       method: "DELETE",
       headers: {
-        "Authorization": `Bearer ${jwtToken}`
+        "Authorization": `Bearer ${localStorage.getItem("jwtToken")}`
       }
     })
     .then((res) => {
