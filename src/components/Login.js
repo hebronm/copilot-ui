@@ -44,6 +44,7 @@ function Login({ onLogin }) {
       .then(data => {
         navigate('/');
         onLogin(username, data.jwtToken);
+        alert("jwtToken: " + localStorage.getItem("jwtToken"));
       })
       .catch(err => {
         console.error("Error logging in:", err);
