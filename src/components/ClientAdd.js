@@ -155,7 +155,6 @@ const ClientAdd = () => {
 
   
   const handleSave = () => {
-    const jwtToken = localStorage.getItem("jwtToken");
     //calc age from birthdate if age is missing; msut be before validation
     const age = formData.personal.age || (formData.personal.birthdate ? calculateAge(formData.personal.birthdate) : null);
 
