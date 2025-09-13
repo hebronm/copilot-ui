@@ -6,7 +6,6 @@ function EmployeeTable() {
   const [employees, setEmployees] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
-  const jwtToken = localStorage.getItem("jwtToken")
 
   const fetchEmployees = async () => {
     try {
@@ -15,7 +14,7 @@ function EmployeeTable() {
       const response = await fetch("http://34.217.130.235:8080/employees", {
         method: "GET",
         headers: {
-          "Authorization": `Bearer ${jwtToken}`
+          "Authorization": `Bearer ${localStorage.getItem("jwtToken")}`
         }
       })
 
@@ -53,7 +52,7 @@ function EmployeeTable() {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${jwtToken}`
+          "Authorization": `Bearer ${localStorage.getItem("jwtToken")}`
         },
         body: JSON.stringify(dummy),
       })
@@ -77,7 +76,7 @@ function EmployeeTable() {
       const response = await fetch(`http://34.217.130.235:8080/employees/${last.id}`, {
         method: "DELETE",
         headers: {
-          "Authorization": `Bearer ${jwtToken}`
+          "Authorization": `Bearer ${localStorage.getItem("jwtToken")}`
         }
       })
 

@@ -42,8 +42,7 @@ function Login({ onLogin }) {
         return res.json();
       })
       .then(data => {
-        // navigate('/');
-        var jwt = "Bearer ";
+        navigate('/');
         onLogin(username, data.jwtToken);
       })
       .catch(err => {
@@ -98,7 +97,13 @@ function Login({ onLogin }) {
           </button>
           <div className="signup-prompt">
             Don’t have an account?{" "}
-            <a href="#" className="signup-link">Sign up</a>
+            <button
+              type="button"
+              className="signup-link"
+              onClick={() => alert("Sign up clicked (not implemented yet)")}
+            >
+            Sign up
+            </button>
           </div>
         </form>
         <div className="login-demo-note">

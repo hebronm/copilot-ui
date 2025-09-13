@@ -234,7 +234,7 @@ const ClientAdd = () => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        "Authorization": `Bearer ${jwtToken}`
+        "Authorization": `Bearer ${localStorage.getItem("jwtToken")}`
       },
       body: JSON.stringify(finalClientData)
     })

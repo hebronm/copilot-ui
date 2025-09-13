@@ -54,14 +54,13 @@ function ClientDetail() {
   const tabs = ['Overview', 'Calculators', 'Investments', 'Retirement'];
   const [activeTab, setActiveTab] = useState('Overview');
   const [activeCalculatorTab, setActiveCalculatorTab] = useState('Simple'); // Track sub-tabs for Calculators
-  const jwtToken = localStorage.getItem("jwtToken");
 
   useEffect(() => {
     fetch(`http://34.217.130.235:8080/clients/${id}`,
       {
         method: "GET",
         headers: {
-          "Authorization": `Bearer ${jwtToken}`
+          "Authorization": `Bearer ${localStorage.getItem("jwtToken")}`
         }
       }
     )
