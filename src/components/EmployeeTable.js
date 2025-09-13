@@ -6,12 +6,18 @@ function EmployeeTable() {
   const [employees, setEmployees] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const jwtToken = localStorage.getItem("jwtToken")
 
   const fetchEmployees = async () => {
     try {
       setLoading(true)
       setError(null)
-      const response = await fetch("http://34.217.130.235:8080/employees")
+      const response = await fetch("http://34.217.130.235:8080/employees", {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${jwtToken}`
+        }
+      })
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`)
@@ -45,7 +51,10 @@ function EmployeeTable() {
 
       const response = await fetch(`http://34.217.130.235:8080/employees/${nextId}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${jwtToken}`
+        },
         body: JSON.stringify(dummy),
       })
 
@@ -67,6 +76,9 @@ function EmployeeTable() {
 
       const response = await fetch(`http://34.217.130.235:8080/employees/${last.id}`, {
         method: "DELETE",
+        headers: {
+          "Authorization": `Bearer ${jwtToken}`
+        }
       })
 
       if (response.ok) {
