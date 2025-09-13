@@ -136,6 +136,43 @@
   background-color: #5a6fd8;
 }
 
+.forgot-password-btn {
+  background: none;
+  border: none;
+  color: #007bff;
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: 1rem;
+  display: inline-block;
+  margin-top: 0px;
+  padding: 0;
+}
+
+.forgot-password-btn:hover {
+  color: #0056b3;
+}
+
+.signup-prompt {
+  text-align: center;
+  margin-top: 4px;
+  font-size: 1rem;
+  color: #333;
+}
+
+.signup-link {
+  background: none;          /* no button background */
+  border: none;              /* no border */
+  color: #007bff;            /* blue link color */
+  text-decoration: underline;/* underline like a link */
+  cursor: pointer;           /* hand cursor */
+  padding: 0;                /* no padding like a button */
+  font: inherit;             /* inherit font styling from parent */
+}
+
+.signup-link:hover {
+  color: #0056b3;
+}
+
 .login-demo-note {
   text-align: center;
   margin-top: 1rem;

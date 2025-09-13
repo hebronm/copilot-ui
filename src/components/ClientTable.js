@@ -9,7 +9,12 @@ function ClientDebugTable() {
   const fetchClients = async () => {
     try {
       setLoading(true);
-      const response = await fetch("http://34.217.130.235:8080/clients");
+      const response = await fetch("http://34.217.130.235:8080/clients", {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${localStorage.getItem("jwtToken")}`
+        }
+      });
       const json = await response.json();
 
       const clientList = json?._embedded?.clientList || [];
@@ -52,7 +57,10 @@ function ClientDebugTable() {
     try {
       await fetch("http://34.217.130.235:8080/clients", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${localStorage.getItem("jwtToken")}`
+         },
         body: JSON.stringify(dummy1),
       });
       fetchClients();
@@ -88,7 +96,10 @@ function ClientDebugTable() {
     try {
       await fetch("http://34.217.130.235:8080/clients", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${localStorage.getItem("jwtToken")}`
+        },
         body: JSON.stringify(dummy2),
       });
       fetchClients();
@@ -106,6 +117,9 @@ function ClientDebugTable() {
     try {
       await fetch(`http://34.217.130.235:8080/clients/${last.id}`, {
         method: "DELETE",
+        headers: {
+          "Authorization": `Bearer ${localStorage.getItem("jwtToken")}`
+        }
       });
       fetchClients();
     } catch (err) {

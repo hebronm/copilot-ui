@@ -1,9 +1,12 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from 'react-router-dom';
+
 import "../CSS_Files/Login.css";
 
 function Login({ onLogin }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
   //Disable scrolling when login mounts
   useEffect(() => {
@@ -16,10 +19,39 @@ function Login({ onLogin }) {
     };
   }, []);
 
+  // TODO: modify this function to handle actual logins
   const handleSubmit = (e) => {
     e.preventDefault();
+    
     if (username && password) {
-      onLogin(username);
+      const loginData = {
+        username: username,
+        password: password
+      };
+      // alert("Login successful!" + username + password);
+      // make the call to the backend
+      fetch('http://34.217.130.235:8080/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(loginData)
+      })
+      .then(res => {
+        if (!res.ok) throw new Error(`Error: ${res.status}`);
+        return res.json();
+      })
+      .then(data => {
+        // navigate('/');
+        var jwt = "Bearer ";
+        onLogin(username, data.jwtToken);
+      })
+      .catch(err => {
+        console.error("Error logging in:", err);
+        alert("Failed to login. Check console for details.");
+      });
+      
+      
     }
   };
 
@@ -56,6 +88,18 @@ function Login({ onLogin }) {
           <button type="submit" className="login-btn">
             Sign In
           </button>
+          <button type="button" className="forgot-password-btn"
+            onClick={() => {
+              // nothing yet, placeholder
+              alert("Forgot password clicked (not implemented yet)");
+            }}
+          >
+            Forgot Password?
+          </button>
+          <div className="signup-prompt">
+            Don’t have an account?{" "}
+            <a href="#" className="signup-link">Sign up</a>
+          </div>
         </form>
         <div className="login-demo-note">
           Demo: Use any username and password to login

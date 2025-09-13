@@ -155,7 +155,7 @@ const ClientAdd = () => {
 
   
   const handleSave = () => {
-    
+    const jwtToken = localStorage.getItem("jwtToken");
     //calc age from birthdate if age is missing; msut be before validation
     const age = formData.personal.age || (formData.personal.birthdate ? calculateAge(formData.personal.birthdate) : null);
 
@@ -233,7 +233,8 @@ const ClientAdd = () => {
     fetch('http://34.217.130.235:8080/clients', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        "Authorization": `Bearer ${jwtToken}`
       },
       body: JSON.stringify(finalClientData)
     })

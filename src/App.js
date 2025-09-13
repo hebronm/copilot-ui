@@ -78,6 +78,7 @@ function App() {
   );
 }
 
+
 function MainApp() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [currentUser, setCurrentUser] = useState("")
@@ -91,10 +92,11 @@ function MainApp() {
     }
   }, [])
 
-  const handleLogin = (username) => {
+  const handleLogin = (username, jwt) => {
     setIsLoggedIn(true)
     setCurrentUser(username)
     localStorage.setItem("currentUser", username)
+    localStorage.setItem("jwtToken", jwt)
 
     //redirect to dash immediately
     navigate("/");

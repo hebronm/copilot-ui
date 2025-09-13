@@ -18,22 +18,40 @@ function Dashboard() {
   const [clients, setClients] = useState([]);
   const [upcomingBirthday, setUpcomingBirthday] = useState("N/A");
   const [upcomingBirthdayName, setUpcomingBirthdayName] = useState("");
-
+  const jwtToken = localStorage.getItem("jwtToken");
   useEffect(() => {
-    fetch("http://34.217.130.235:8080/clients")
+    if (jwtToken) {
+    fetch("http://34.217.130.235:8080/clients",
+      {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${jwtToken}`
+        }
+      }
+    )
       .then(res => {
+        // alert("response status: " + res.status);
         if (!res.ok) throw new Error(`Error: ${res.status}`);
         return res.json();
       })
       .then(json => {
         // If backend wraps payload under _embedded.clientList
-        const list = json?._embedded?.clientList || json || [];
+        console.log("Fetched clients JSON:", json);
+        // const list = json?._embedded?.clientList || json || [];
+          const list = Array.isArray(json?._embedded?.clientList)
+            ? json._embedded.clientList
+            : [];
+        console.log("List we’re setting to clients:", list);
         setClients(list);
         findUpcomingBirthday(list);
       })
       .catch(err => {
         console.error("Failed to fetch clients:", err);
-      });
+      })
+
+    } else {
+      alert("No JWT token found in local storage");
+    }
   }, []);
 
   const handleViewClick = (clientId) => {
@@ -51,7 +69,10 @@ function Dashboard() {
 
     //backend call
     fetch(`http://34.217.130.235:8080/clients/${clientId}`, {
-      method: "DELETE"
+      method: "DELETE",
+      headers: {
+        "Authorization": `Bearer ${jwtToken}`
+      }
     })
     .then((res) => {
       if (!res.ok) throw new Error(`Error: ${res.status}`);
@@ -73,13 +94,12 @@ function Dashboard() {
 
   /* calculations for the top boxes */
   const totalClients = clients.length;
-
+  // alert("clients: " + JSON.stringify(clients));
   const totalAssets = clients.reduce((sum, c) => {
     const assets = (c.totalSavings || 0) + (c.rothIRABalance || 0) + (c.traditionalIRABalance || 0);
     const debt = c.totalDebt || 0;
     return sum + (assets - debt);
   }, 0);
-
 
 
   // Average income (use first entry if it's an array)
