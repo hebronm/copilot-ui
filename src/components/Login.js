@@ -28,7 +28,6 @@ function Login({ onLogin }) {
         username: username,
         password: password
       };
-      // alert("Login successful!" + username + password);
       // make the call to the backend
       fetch('http://34.217.130.235:8080/api/auth/login', {
         method: 'POST',
@@ -44,7 +43,6 @@ function Login({ onLogin }) {
       .then(data => {
         navigate('/');
         onLogin(username, data.jwtToken);
-        alert("jwtToken: " + localStorage.getItem("jwtToken"));
       })
       .catch(err => {
         console.error("Error logging in:", err);
@@ -107,9 +105,6 @@ function Login({ onLogin }) {
             </button>
           </div>
         </form>
-        <div className="login-demo-note">
-          Demo: Use any username and password to login
-        </div>
       </div>
     </div>
   );
