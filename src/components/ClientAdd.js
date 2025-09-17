@@ -153,16 +153,22 @@ const ClientAdd = () => {
     return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
   };
 
+  const isFutureDate = (dateString) => {
+    if (!dateString) return false;
+    const today = new Date();
+    const date = new Date(dateString);
+    return date > today;
+  };
   
   const handleSave = () => {
-    //calc age from birthdate if age is missing; msut be before validation
-    const age = formData.personal.age || (formData.personal.birthdate ? calculateAge(formData.personal.birthdate) : null);
-
-    //validate that age is positive
-    if (age === null || age <= 0) {
-      alert("Please enter a valid birthdate. Age must be at least 1 year.");
-      return; 
+    // make sure the birthday is a valid birthday (it's not in the future)
+    if (isFutureDate(formData.personal.birthdate)) {
+      alert("Please enter a valid birthdate.");
+      return;
     }
+
+    //calc age from birthdate if age is missing; must be before validation
+    const age = formData.personal.age || (formData.personal.birthdate ? calculateAge(formData.personal.birthdate) : null);
 
     //update formData so it contains the calculated age
     setFormData(prev => ({
@@ -242,7 +248,6 @@ const ClientAdd = () => {
       return res.json();
     })
     .then(data => {
-      alert("Client successfully added!");
       navigate('/');
     })
     .catch(err => {
@@ -310,8 +315,14 @@ const ClientAdd = () => {
                     value={formData.personal.birthdate}
                     onChange={(e) => handleChange('personal', 'birthdate', e.target.value)}
                 />
-                {formData.personal.age !== undefined && formData.personal.age !== '' && (
-                  <small className="form-text">Age: {formData.personal.age}</small>
+                {formData.personal.birthdate && isFutureDate(formData.personal.birthdate) ? (
+                  <small className="form-text" style={{ color: 'red' }}>
+                    Birthdate cannot be in the future
+                  </small>
+                ) : (
+                  formData.personal.age !== undefined && formData.personal.age !== '' && (
+                    <small className="form-text">Age: {formData.personal.age}</small>
+                  )
                 )}
             </div>
 
@@ -393,11 +404,15 @@ const ClientAdd = () => {
                     val = parts[0] + '.' + parts[1];
                   }
 
-                  //auto add ".0" if input is whole number
-                  if (val && !val.includes('.')) {
-                    val = val + '.0';
-                  }
                   handleChange('financial', 'annualSalaryGrowth', val)}}
+                onBlur={() => {
+                  // once they click off of this part of the form,
+                  // add a .0 to the end if there isn't a decimal already there
+                  let val = formData.financial.annualSalaryGrowth;
+                  if (val && !val.includes('.')) {
+                    handleChange('financial', 'annualSalaryGrowth', val + '.0');
+                  }
+                }}
                 placeholder='Ex: 3.3'
             />
             <small>Input value as a percentage (%)</small>
