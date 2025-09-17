@@ -18,6 +18,7 @@ function Dashboard() {
   const [clients, setClients] = useState([]);
   const [upcomingBirthday, setUpcomingBirthday] = useState("N/A");
   const [upcomingBirthdayName, setUpcomingBirthdayName] = useState("");
+  const [deleteClientId, setDeleteClientId] = useState(null);
 
   useEffect(() => {
     const jwtToken = localStorage.getItem("jwtToken");
@@ -31,7 +32,6 @@ function Dashboard() {
       }
     )
       .then(res => {
-        // alert("response status: " + res.status);
         if (!res.ok) throw new Error(`Error: ${res.status}`);
         return res.json();
       })
@@ -60,16 +60,21 @@ function Dashboard() {
   }
 
   const handleDeleteClick = (clientId) => {
-    console.log("Delete clicked for client id:", clientId);
+    setDeleteClientId(clientId);
+  };
+
+  const confirmDelete = () => {
+    console.log("Delete clicked for client ID:", deleteClientId);
 
     //confirm prompt user
-    const confirmDelete = window.confirm(
-      "You are about to delete a client. Deleted client information cannot be recovered. Are you sure?"
-    );
-    if (!confirmDelete) return;
-
+    // const confirmDelete = window.confirm(
+    //   "You are about to delete a client. Deleted client information cannot be recovered. Are you sure?"
+    // );
+    // if (!confirmDelete) return;
+    const idToDelete = deleteClientId;
+    setDeleteClientId(null);
     //backend call
-    fetch(`http://34.217.130.235:8080/clients/${clientId}`, {
+    fetch(`http://34.217.130.235:8080/clients/${idToDelete}`, {
       method: "DELETE",
       headers: {
         "Authorization": `Bearer ${localStorage.getItem("jwtToken")}`
@@ -78,15 +83,18 @@ function Dashboard() {
     .then((res) => {
       if (!res.ok) throw new Error(`Error: ${res.status}`);
       //update UI by removing the deleted client
-      setClients((prev) => prev.filter((client) => client.id !== clientId));
+      setClients((prev) => prev.filter((client) => client.id !== idToDelete));
 
       //success/fail message
-      alert("Client deletion successful!");
     })
     .catch((err) => {
       console.error("Failed to delete client:", err);
       alert("An error occurred while deleting the client. Please wait and try again later.");
     });
+  };
+
+  const cancelDelete = () => {
+    setDeleteClientId(null);
   };
 
   const handleAddClientClick = () => {
@@ -95,7 +103,6 @@ function Dashboard() {
 
   /* calculations for the top boxes */
   const totalClients = clients.length;
-  // alert("clients: " + JSON.stringify(clients));
   const totalAssets = clients.reduce((sum, c) => {
     const assets = (c.totalSavings || 0) + (c.rothIRABalance || 0) + (c.traditionalIRABalance || 0);
     const debt = c.totalDebt || 0;
@@ -288,6 +295,17 @@ function Dashboard() {
 
         </table>
       </div>
+      {deleteClientId && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <p>Are you sure you want to delete this client? This action cannot be undone.</p>
+            <div className="modal-buttons">
+              <button className="comfirm-delete-btn" onClick={confirmDelete}>Yes, delete</button>
+              <button className="cancel-btn" onClick={cancelDelete}>Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

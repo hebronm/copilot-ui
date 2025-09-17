@@ -182,3 +182,72 @@
 .delete-btn:active {
   background-color: #b61515;
 }
+
+/* Cover the entire screen */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* semi-transparent background */
+  
+  display: flex;            /* enables flexbox */
+  justify-content: center;  /* center horizontally */
+  align-items: center;      /* center vertically */
+  z-index: 1000;            /* make sure it’s on top of everything */
+}
+
+/* The popup box */
+.modal-content {
+  background-color: white;
+  padding-top: 5px;
+  padding-bottom: 20px;
+  padding-left: 20px;
+  padding-right: 20px;
+  border-radius: 8px;
+  max-width: 400px;
+  width: 90%;
+  font-size: 1.2rem;
+  font-weight: 500;
+  text-align: center; /* center the text/buttons inside */
+  box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem; /* space between buttons */
+  margin-top: 1rem; /* space above buttons */
+}
+
+.comfirm-delete-btn {
+  background-color: #c62828; /* red for danger */
+  color: white;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.comfirm-delete-btn:hover {
+  background-color: #b31e1e; /* darker on hover */
+}
+
+.cancel-btn {
+  background-color: #f1f1f1; /* neutral light gray */
+  color: #333;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.cancel-btn:hover {
+  background-color: #d5d5d5; /* slightly darker on hover */
+}

@@ -6,6 +6,7 @@ import "../CSS_Files/Login.css";
 function Login({ onLogin }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [loginError, setLoginError] = useState(""); // empty string means no error
   const navigate = useNavigate();
 
   //Disable scrolling when login mounts
@@ -37,7 +38,13 @@ function Login({ onLogin }) {
         body: JSON.stringify(loginData)
       })
       .then(res => {
-        if (!res.ok) throw new Error(`Error: ${res.status}`);
+        if (!res.ok) {
+          if (res.status === 401) {
+            throw new Error("Invalid username or password");
+          } else {
+            throw new Error(`Error: ${res.status}`);
+          }
+        }
         return res.json();
       })
       .then(data => {
@@ -46,7 +53,8 @@ function Login({ onLogin }) {
       })
       .catch(err => {
         console.error("Error logging in:", err);
-        alert("Failed to login. Check console for details.");
+        // alert("Failed to login. Check console for details.");
+        setLoginError(err.message);
       });
       
       
@@ -68,7 +76,10 @@ function Login({ onLogin }) {
               type="text"
               placeholder="Enter your username"
               value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              onChange={(e) => {
+                setUsername(e.target.value);
+                setLoginError("");
+              }}
               required
             />
           </div>
@@ -79,10 +90,18 @@ function Login({ onLogin }) {
               type="password"
               placeholder="Enter your password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) => {
+                setPassword(e.target.value);
+                setLoginError("");
+              }}
               required
             />
           </div>
+          {loginError && (
+            <div className="login-error">
+              {loginError}
+            </div>
+          )}
           <button type="submit" className="login-btn">
             Sign In
           </button>
