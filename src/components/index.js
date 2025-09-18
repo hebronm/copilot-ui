@@ -8,5 +8,6 @@ export { default as FAQ } from './FAQ'
 export { default as Overview } from './Overview'
 export { default as ClientAdd } from './ClientAdd'
 export { default as ClientTable } from './ClientTable'
+export { default as SignupPage } from './SignupPage'
 
 // Update this index whenever you create a new component and need to import it
