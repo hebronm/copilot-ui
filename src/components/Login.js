@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom"
 
 import "../CSS_Files/Login.css";
 
-function Login({ onLogin }) {
+function Login({ onLogin , onSignup }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loginError, setLoginError] = useState(""); // empty string means no error
@@ -59,6 +59,10 @@ function Login({ onLogin }) {
       
       
     }
+  };
+
+  const handleSignupClick = () => {
+    onSignup();
   };
 
   return (
@@ -118,7 +122,7 @@ function Login({ onLogin }) {
             <button
               type="button"
               className="signup-link"
-              onClick={() => alert("Sign up clicked (not implemented yet)")}
+              onClick={handleSignupClick}
             >
             Sign up
             </button>

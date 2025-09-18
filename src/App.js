@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import "./CSS_Files/App.css"
 import { BrowserRouter as Router, Routes, Route, Link, useLocation, useNavigate } from "react-router-dom"
-import { Login, Dashboard, ClientDetail, ClientAdd, ClientTable, IRACalculator, DataAnalysis, EmployeeTable, FAQ } from './components'; // Update index if adding new components
+import { Login, Dashboard, ClientDetail, ClientAdd, ClientTable, IRACalculator, DataAnalysis, EmployeeTable, FAQ, SignupPage } from './components'; // Update index if adding new components
 
 
 function Navigation({ currentUser, onLogout }) {
@@ -82,6 +82,8 @@ function App() {
 function MainApp() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [currentUser, setCurrentUser] = useState("")
+  const [isSignedUp, setIsSignedUp] = useState(false)
+  
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -102,6 +104,14 @@ function MainApp() {
     navigate("/");
   }
 
+  const handleSignup = () => {
+    setIsSignedUp(true)
+  }
+
+  const onLoginClick = () => {
+    setIsSignedUp(false)
+  }
+
   const handleLogout = () => {
     navigate("/"); //to clear the address bar
     setIsLoggedIn(false)
@@ -110,7 +120,10 @@ function MainApp() {
   }
 
   if (!isLoggedIn) {
-    return <Login onLogin={handleLogin} />
+    if (isSignedUp) {
+      return <SignupPage onLoginClick={onLoginClick}/>
+    }
+    return <Login onLogin={handleLogin} onSignup={handleSignup} />
   }
 
   return (
@@ -126,6 +139,7 @@ function MainApp() {
           <Route path="/table" element={<EmployeeTable />} />
           <Route path="/clientTable" element={<ClientTable />} />
           <Route path="/FAQ" element={<FAQ />} />
+          <Route path="/signup" element={<SignupPage />} />
         </Routes>
       </div>
     </div>
